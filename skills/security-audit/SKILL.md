@@ -17,6 +17,7 @@ Start of any security work; before a release; after a suspected incident; when o
 Read access to the repo. No production credentials. Confirm scope (whole repo or module) with the user if ambiguous.
 
 ## 4. Required discovery steps
+0. Apply `environment-assessment` first: record the environment profile (local / staging / production / unknown), the authorized scope and the resulting mode. This skill covers code and configuration; do not claim deployed-system controls were verified.
 1. Detect framework/version (`composer.json`, `package.json`, lockfiles) and read `.security-engineering/config.yaml` if present.
 2. List all entry points: routes/controllers, webhooks, queue consumers, scheduled jobs, CLI, file uploads.
 3. Identify authn mechanism (session, Sanctum/Passport, JWT, API keys) and authz mechanism (policies/gates, guards/CASL, ad-hoc checks).
@@ -48,7 +49,7 @@ Every entry point has a row in the coverage matrix; every finding has file:line 
 ## 11. Required report format
 ```
 # Audit report — <repo> @ <commit>
-Scope / Not covered
+Environment profile (determined, confidence, evidence, limitations) / Scope / Not covered
 Coverage matrix: entry point | authn | authz | object-level | validation | rate-limit | audit
 Findings: ID | Severity | Title | Evidence(file:line) | Impact | Fix (skill) | Verification
 Unverified items

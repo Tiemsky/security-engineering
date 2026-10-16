@@ -107,6 +107,9 @@ fi
 # ---- shared resources -----------------------------------------------------------------------
 say "shared resources -> $SHARED_DIR"
 for d in core contracts policies; do install_tree "$SRC/$d" "$SHARED_DIR/$d"; done
+# deterministic assessment gate (+ its schema validator) so installed projects can run it: <shared>/scripts/assessment-gate.py
+install_file "$SRC/scripts/assessment-gate.py" "$SHARED_DIR/scripts/assessment-gate.py"
+install_file "$SRC/tests/lib/minischema.py" "$SHARED_DIR/scripts/minischema.py"
 
 # ---- per tool -------------------------------------------------------------------------------
 if has claude; then

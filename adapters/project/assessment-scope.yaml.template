@@ -1,0 +1,18 @@
+# Assessment scope and environment profile. Commit it WITHOUT secrets. Validated by: python3 scripts/assessment-gate.py classify <this file>
+# Rules: a hostname/URL is never evidence; a declaration alone is not enough; accessibility is not authorization.
+schema_version: "1.0.0"
+target: {name: "my-app", framework: "laravel"}      # laravel | nestjs | generic | other
+declared_environment: unknown                       # local | staging | production | unknown  (what the owner says)
+evidence:                                           # VERIFIABLE artefacts; kinds: deployment_manifest, ci_config, infra_definition, env_config, runtime_metadata, declared_by_owner, hostname, url
+  # - {kind: deployment_manifest, detail: "overlays/staging sets APP_ENV=staging", supports: staging}
+  # - {kind: ci_config, detail: "deploy-staging job targets the staging cluster", supports: staging}
+authorization:
+  status: none                                      # none | read_only | explicit  (active tests need explicit)
+  # approver: "name or role of the person who can authorize"
+  # recorded_at: "2026-01-01T09:00:00Z"
+  # targets: [{kind: domain, value: "app.example.org"}]        # domain (or *.suffix), ip_range (CIDR), url (prefix)
+  # allowed_activities: [active_read_only]            # static_analysis and passive_observation need no authorization
+  # window: {start: "2026-01-02T08:00:00Z", end: "2026-01-02T12:00:00Z"}
+  # limits: {max_requests_per_second: 5, stop_conditions: ["error rate above 2%"], rollback: "restore the pre-test snapshot"}
+  # test_accounts: ["qa-user-1"]                      # dedicated accounts only; never real users
+  # production_exceptions: []                         # specific, attributed, expiring; for heavy activities in production only

@@ -1,0 +1,916 @@
+[
+ {
+  "name": "hostname-only-staging",
+  "why": "a hostname containing 'staging' is not evidence",
+  "scope": {
+   "schema_version": "1.0.0",
+   "target": {
+    "name": "shop",
+    "framework": "laravel"
+   },
+   "declared_environment": "staging",
+   "evidence": [
+    {
+     "kind": "hostname",
+     "detail": "staging.example.org",
+     "supports": "staging"
+    },
+    {
+     "kind": "url",
+     "detail": "https://staging.example.org",
+     "supports": "staging"
+    }
+   ],
+   "authorization": {
+    "status": "none"
+   }
+  },
+  "classify": {
+   "environment": "unknown",
+   "mode": "code-only",
+   "rules": [
+    "E01-weak-evidence-ignored",
+    "E02-declaration-alone"
+   ]
+  },
+  "checks": [
+   {
+    "activity": "static_analysis",
+    "target": "https://app.example.org/api/health",
+    "now": "2026-10-20T09:00:00Z",
+    "expect": "allow",
+    "rules": [
+     "G02-passive-allowed"
+    ]
+   },
+   {
+    "activity": "active_read_only",
+    "target": "https://staging.example.org/",
+    "now": "2026-10-20T09:00:00Z",
+    "expect": "needs_confirmation",
+    "rules": [
+     "G04-unknown-env-confirm"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "declaration-alone",
+  "why": "the developer's word without verifiable artefacts is insufficient",
+  "scope": {
+   "schema_version": "1.0.0",
+   "target": {
+    "name": "shop",
+    "framework": "laravel"
+   },
+   "declared_environment": "staging",
+   "evidence": [
+    {
+     "kind": "declared_by_owner",
+     "detail": "the owner says this is staging",
+     "supports": "staging"
+    }
+   ],
+   "authorization": {
+    "status": "none"
+   }
+  },
+  "classify": {
+   "environment": "unknown",
+   "mode": "code-only",
+   "rules": [
+    "E02-declaration-alone"
+   ]
+  },
+  "checks": [
+   {
+    "activity": "active_read_only",
+    "target": "https://app.example.org/api/health",
+    "now": "2026-10-20T09:00:00Z",
+    "expect": "needs_confirmation",
+    "rules": [
+     "G04-unknown-env-confirm"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "single-source-no-declaration",
+  "why": "one artefact and no matching declaration: low confidence",
+  "scope": {
+   "schema_version": "1.0.0",
+   "target": {
+    "name": "shop",
+    "framework": "laravel"
+   },
+   "declared_environment": "unknown",
+   "evidence": [
+    {
+     "kind": "ci_config",
+     "detail": "deploy-staging job targets the staging cluster",
+     "supports": "staging"
+    }
+   ],
+   "authorization": {
+    "status": "none"
+   }
+  },
+  "classify": {
+   "environment": "unknown",
+   "mode": "code-only",
+   "rules": [
+    "E04-single-source-low-confidence"
+   ]
+  },
+  "checks": [
+   {
+    "activity": "active_read_only",
+    "target": "https://app.example.org/api/health",
+    "now": "2026-10-20T09:00:00Z",
+    "expect": "needs_confirmation",
+    "rules": [
+     "G04-unknown-env-confirm"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "conflict-production-suspected",
+  "why": "staging declared but infrastructure points at production",
+  "scope": {
+   "schema_version": "1.0.0",
+   "target": {
+    "name": "shop",
+    "framework": "laravel"
+   },
+   "declared_environment": "staging",
+   "evidence": [
+    {
+     "kind": "deployment_manifest",
+     "detail": "overlays/staging/kustomization.yaml sets APP_ENV=staging",
+     "supports": "staging"
+    },
+    {
+     "kind": "infra_definition",
+     "detail": "terraform workspace prod",
+     "supports": "production"
+    }
+   ],
+   "authorization": {
+    "status": "none"
+   }
+  },
+  "classify": {
+   "environment": "unknown",
+   "mode": "code-only",
+   "rules": [
+    "E03-conflicting-evidence"
+   ]
+  },
+  "checks": [
+   {
+    "activity": "active_load",
+    "target": "https://app.example.org/api/health",
+    "now": "2026-10-20T09:00:00Z",
+    "expect": "deny",
+    "rules": [
+     "G03-unknown-env-production-suspected-heavy"
+    ]
+   },
+   {
+    "activity": "active_read_only",
+    "target": "https://app.example.org/api/health",
+    "now": "2026-10-20T09:00:00Z",
+    "expect": "needs_confirmation",
+    "rules": [
+     "G04-unknown-env-confirm"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "staging-confirmed-authorized",
+  "why": "two artefacts + declaration + explicit scoped authorization",
+  "scope": {
+   "schema_version": "1.0.0",
+   "target": {
+    "name": "shop",
+    "framework": "laravel"
+   },
+   "declared_environment": "staging",
+   "evidence": [
+    {
+     "kind": "deployment_manifest",
+     "detail": "overlays/staging/kustomization.yaml sets APP_ENV=staging",
+     "supports": "staging"
+    },
+    {
+     "kind": "ci_config",
+     "detail": "deploy-staging job targets the staging cluster",
+     "supports": "staging"
+    }
+   ],
+   "authorization": {
+    "status": "explicit",
+    "approver": "Head of Engineering (role)",
+    "recorded_at": "2026-10-16T09:00:00Z",
+    "targets": [
+     {
+      "kind": "domain",
+      "value": "app.example.org"
+     }
+    ],
+    "allowed_activities": [
+     "active_read_only",
+     "active_authenticated"
+    ],
+    "window": {
+     "start": "2026-10-20T08:00:00Z",
+     "end": "2026-10-20T12:00:00Z"
+    },
+    "limits": {
+     "max_requests_per_second": 5,
+     "stop_conditions": [
+      "error rate above 2%",
+      "any 5xx burst",
+      "owner request"
+     ],
+     "rollback": "restore the staging snapshot taken before the window"
+    },
+    "test_accounts": [
+     "qa-user-1"
+    ]
+   }
+  },
+  "classify": {
+   "environment": "staging",
+   "mode": "staging",
+   "confidence": "high",
+   "rules": [
+    "E05-confirmed"
+   ]
+  },
+  "checks": [
+   {
+    "activity": "active_read_only",
+    "target": "https://app.example.org/api/health",
+    "now": "2026-10-20T09:00:00Z",
+    "expect": "allow",
+    "rules": [
+     "G15-allowed"
+    ]
+   },
+   {
+    "activity": "active_authenticated",
+    "target": "https://app.example.org/api/health",
+    "now": "2026-10-20T09:00:00Z",
+    "expect": "allow",
+    "rules": [
+     "G15-allowed"
+    ]
+   },
+   {
+    "activity": "active_read_only",
+    "target": "https://other.example.org/",
+    "now": "2026-10-20T09:00:00Z",
+    "expect": "deny",
+    "rules": [
+     "G07-target-out-of-scope"
+    ]
+   },
+   {
+    "activity": "active_fuzzing",
+    "target": "https://app.example.org/api/health",
+    "now": "2026-10-20T09:00:00Z",
+    "expect": "deny",
+    "rules": [
+     "G08-activity-not-authorized"
+    ]
+   },
+   {
+    "activity": "active_read_only",
+    "target": "https://app.example.org/api/health",
+    "now": "2026-10-21T09:00:00Z",
+    "expect": "deny",
+    "rules": [
+     "G09-outside-window"
+    ]
+   },
+   {
+    "activity": "exploitation",
+    "target": "https://app.example.org/api/health",
+    "now": "2026-10-20T09:00:00Z",
+    "expect": "deny",
+    "rules": [
+     "G01-never-by-agent"
+    ]
+   },
+   {
+    "activity": "enforcement_action",
+    "target": "https://app.example.org/api/health",
+    "now": "2026-10-20T09:00:00Z",
+    "expect": "deny",
+    "rules": [
+     "G01-never-by-agent"
+    ]
+   },
+   {
+    "activity": "port_scan_everything",
+    "target": "https://app.example.org/api/health",
+    "now": "2026-10-20T09:00:00Z",
+    "expect": "deny",
+    "rules": [
+     "G00-unknown-activity"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "staging-no-explicit-authorization",
+  "why": "reachable and identified is not authorized",
+  "scope": {
+   "schema_version": "1.0.0",
+   "target": {
+    "name": "shop",
+    "framework": "laravel"
+   },
+   "declared_environment": "staging",
+   "evidence": [
+    {
+     "kind": "deployment_manifest",
+     "detail": "overlays/staging/kustomization.yaml sets APP_ENV=staging",
+     "supports": "staging"
+    },
+    {
+     "kind": "ci_config",
+     "detail": "deploy-staging job targets the staging cluster",
+     "supports": "staging"
+    }
+   ],
+   "authorization": {
+    "status": "read_only"
+   }
+  },
+  "classify": {
+   "environment": "staging",
+   "mode": "staging",
+   "confidence": "high",
+   "rules": [
+    "E05-confirmed"
+   ]
+  },
+  "checks": [
+   {
+    "activity": "active_read_only",
+    "target": "https://app.example.org/api/health",
+    "now": "2026-10-20T09:00:00Z",
+    "expect": "deny",
+    "rules": [
+     "G06-authorization-not-explicit"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "staging-limits-missing",
+  "why": "no rate limit, stop condition or rollback recorded",
+  "scope": {
+   "schema_version": "1.0.0",
+   "target": {
+    "name": "shop",
+    "framework": "laravel"
+   },
+   "declared_environment": "staging",
+   "evidence": [
+    {
+     "kind": "deployment_manifest",
+     "detail": "overlays/staging/kustomization.yaml sets APP_ENV=staging",
+     "supports": "staging"
+    },
+    {
+     "kind": "ci_config",
+     "detail": "deploy-staging job targets the staging cluster",
+     "supports": "staging"
+    }
+   ],
+   "authorization": {
+    "status": "explicit",
+    "approver": "Head of Engineering (role)",
+    "recorded_at": "2026-10-16T09:00:00Z",
+    "targets": [
+     {
+      "kind": "domain",
+      "value": "app.example.org"
+     }
+    ],
+    "allowed_activities": [
+     "active_read_only",
+     "active_authenticated"
+    ],
+    "window": {
+     "start": "2026-10-20T08:00:00Z",
+     "end": "2026-10-20T12:00:00Z"
+    },
+    "limits": {},
+    "test_accounts": [
+     "qa-user-1"
+    ]
+   }
+  },
+  "classify": {
+   "environment": "staging",
+   "mode": "staging",
+   "confidence": "high",
+   "rules": [
+    "E05-confirmed"
+   ]
+  },
+  "checks": [
+   {
+    "activity": "active_read_only",
+    "target": "https://app.example.org/api/health",
+    "now": "2026-10-20T09:00:00Z",
+    "expect": "needs_confirmation",
+    "rules": [
+     "G10-limits-missing"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "staging-rate-over-cap",
+  "why": "80 rps exceeds the staging cap",
+  "scope": {
+   "schema_version": "1.0.0",
+   "target": {
+    "name": "shop",
+    "framework": "laravel"
+   },
+   "declared_environment": "staging",
+   "evidence": [
+    {
+     "kind": "deployment_manifest",
+     "detail": "overlays/staging/kustomization.yaml sets APP_ENV=staging",
+     "supports": "staging"
+    },
+    {
+     "kind": "ci_config",
+     "detail": "deploy-staging job targets the staging cluster",
+     "supports": "staging"
+    }
+   ],
+   "authorization": {
+    "status": "explicit",
+    "approver": "Head of Engineering (role)",
+    "recorded_at": "2026-10-16T09:00:00Z",
+    "targets": [
+     {
+      "kind": "domain",
+      "value": "app.example.org"
+     }
+    ],
+    "allowed_activities": [
+     "active_read_only",
+     "active_authenticated"
+    ],
+    "window": {
+     "start": "2026-10-20T08:00:00Z",
+     "end": "2026-10-20T12:00:00Z"
+    },
+    "limits": {
+     "max_requests_per_second": 80,
+     "stop_conditions": [
+      "error rate above 2%",
+      "any 5xx burst",
+      "owner request"
+     ],
+     "rollback": "restore the staging snapshot taken before the window"
+    },
+    "test_accounts": [
+     "qa-user-1"
+    ]
+   }
+  },
+  "classify": {
+   "environment": "staging",
+   "mode": "staging",
+   "confidence": "high",
+   "rules": [
+    "E05-confirmed"
+   ]
+  },
+  "checks": [
+   {
+    "activity": "active_read_only",
+    "target": "https://app.example.org/api/health",
+    "now": "2026-10-20T09:00:00Z",
+    "expect": "deny",
+    "rules": [
+     "G11-rate-over-cap"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "staging-test-accounts-missing",
+  "why": "authenticated tests need dedicated test accounts",
+  "scope": {
+   "schema_version": "1.0.0",
+   "target": {
+    "name": "shop",
+    "framework": "laravel"
+   },
+   "declared_environment": "staging",
+   "evidence": [
+    {
+     "kind": "deployment_manifest",
+     "detail": "overlays/staging/kustomization.yaml sets APP_ENV=staging",
+     "supports": "staging"
+    },
+    {
+     "kind": "ci_config",
+     "detail": "deploy-staging job targets the staging cluster",
+     "supports": "staging"
+    }
+   ],
+   "authorization": {
+    "status": "explicit",
+    "approver": "Head of Engineering (role)",
+    "recorded_at": "2026-10-16T09:00:00Z",
+    "targets": [
+     {
+      "kind": "domain",
+      "value": "app.example.org"
+     }
+    ],
+    "allowed_activities": [
+     "active_read_only",
+     "active_authenticated"
+    ],
+    "window": {
+     "start": "2026-10-20T08:00:00Z",
+     "end": "2026-10-20T12:00:00Z"
+    },
+    "limits": {
+     "max_requests_per_second": 5,
+     "stop_conditions": [
+      "error rate above 2%",
+      "any 5xx burst",
+      "owner request"
+     ],
+     "rollback": "restore the staging snapshot taken before the window"
+    },
+    "test_accounts": []
+   }
+  },
+  "classify": {
+   "environment": "staging",
+   "mode": "staging",
+   "confidence": "high",
+   "rules": [
+    "E05-confirmed"
+   ]
+  },
+  "checks": [
+   {
+    "activity": "active_authenticated",
+    "target": "https://app.example.org/api/health",
+    "now": "2026-10-20T09:00:00Z",
+    "expect": "needs_confirmation",
+    "rules": [
+     "G12-test-accounts-missing"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "production-readonly",
+  "why": "production: only non-destructive, scoped, windowed, rate-capped checks",
+  "scope": {
+   "schema_version": "1.0.0",
+   "target": {
+    "name": "shop",
+    "framework": "laravel"
+   },
+   "declared_environment": "production",
+   "evidence": [
+    {
+     "kind": "deployment_manifest",
+     "detail": "overlays/production/kustomization.yaml sets APP_ENV=production",
+     "supports": "production"
+    },
+    {
+     "kind": "infra_definition",
+     "detail": "terraform workspace prod",
+     "supports": "production"
+    }
+   ],
+   "authorization": {
+    "status": "explicit",
+    "approver": "Head of Engineering (role)",
+    "recorded_at": "2026-10-16T09:00:00Z",
+    "targets": [
+     {
+      "kind": "domain",
+      "value": "app.example.org"
+     }
+    ],
+    "allowed_activities": [
+     "active_read_only",
+     "active_authenticated",
+     "active_load"
+    ],
+    "window": {
+     "start": "2026-10-20T08:00:00Z",
+     "end": "2026-10-20T12:00:00Z"
+    },
+    "limits": {
+     "max_requests_per_second": 2,
+     "stop_conditions": [
+      "any 5xx",
+      "owner request"
+     ],
+     "rollback": "disable the test accounts"
+    },
+    "test_accounts": [
+     "qa-user-1"
+    ]
+   }
+  },
+  "classify": {
+   "environment": "production",
+   "mode": "production",
+   "confidence": "high",
+   "rules": [
+    "E05-confirmed"
+   ]
+  },
+  "checks": [
+   {
+    "activity": "active_read_only",
+    "target": "https://app.example.org/api/health",
+    "now": "2026-10-20T09:00:00Z",
+    "expect": "allow",
+    "rules": [
+     "G15-allowed"
+    ]
+   },
+   {
+    "activity": "active_load",
+    "target": "https://app.example.org/api/health",
+    "now": "2026-10-20T09:00:00Z",
+    "expect": "deny",
+    "rules": [
+     "G14-production-heavy-denied"
+    ]
+   },
+   {
+    "activity": "enforcement_action",
+    "target": "https://app.example.org/api/health",
+    "now": "2026-10-20T09:00:00Z",
+    "expect": "deny",
+    "rules": [
+     "G01-never-by-agent"
+    ]
+   },
+   {
+    "activity": "sensitive_data_collection",
+    "target": "https://app.example.org/api/health",
+    "now": "2026-10-20T09:00:00Z",
+    "expect": "deny",
+    "rules": [
+     "G08-activity-not-authorized"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "production-exception",
+  "why": "a heavy activity needs a specific, attributed, unexpired exception",
+  "scope": {
+   "schema_version": "1.0.0",
+   "target": {
+    "name": "shop",
+    "framework": "laravel"
+   },
+   "declared_environment": "production",
+   "evidence": [
+    {
+     "kind": "deployment_manifest",
+     "detail": "overlays/production/kustomization.yaml sets APP_ENV=production",
+     "supports": "production"
+    },
+    {
+     "kind": "infra_definition",
+     "detail": "terraform workspace prod",
+     "supports": "production"
+    }
+   ],
+   "authorization": {
+    "status": "explicit",
+    "approver": "Head of Engineering (role)",
+    "recorded_at": "2026-10-16T09:00:00Z",
+    "targets": [
+     {
+      "kind": "domain",
+      "value": "app.example.org"
+     }
+    ],
+    "allowed_activities": [
+     "active_read_only",
+     "active_authenticated",
+     "active_load"
+    ],
+    "window": {
+     "start": "2026-10-20T08:00:00Z",
+     "end": "2026-10-20T12:00:00Z"
+    },
+    "limits": {
+     "max_requests_per_second": 2,
+     "stop_conditions": [
+      "any 5xx",
+      "owner request"
+     ],
+     "rollback": "disable the test accounts"
+    },
+    "test_accounts": [
+     "qa-user-1"
+    ],
+    "production_exceptions": [
+     {
+      "activity": "active_load",
+      "approver": "CTO (role)",
+      "safety_plan": "10 requests, one test account, off-peak, owner on call",
+      "expires": "2026-10-20T10:00:00Z"
+     }
+    ]
+   }
+  },
+  "classify": {
+   "environment": "production",
+   "mode": "production",
+   "confidence": "high",
+   "rules": [
+    "E05-confirmed"
+   ]
+  },
+  "checks": [
+   {
+    "activity": "active_load",
+    "target": "https://app.example.org/api/health",
+    "now": "2026-10-20T09:00:00Z",
+    "expect": "allow",
+    "rules": [
+     "G13-production-exception-valid"
+    ]
+   },
+   {
+    "activity": "active_load",
+    "target": "https://app.example.org/api/health",
+    "now": "2026-10-20T11:00:00Z",
+    "expect": "deny",
+    "rules": [
+     "G14-production-heavy-denied"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "production-rate-over-cap",
+  "why": "production cap is 5 rps",
+  "scope": {
+   "schema_version": "1.0.0",
+   "target": {
+    "name": "shop",
+    "framework": "laravel"
+   },
+   "declared_environment": "production",
+   "evidence": [
+    {
+     "kind": "deployment_manifest",
+     "detail": "overlays/production/kustomization.yaml sets APP_ENV=production",
+     "supports": "production"
+    },
+    {
+     "kind": "infra_definition",
+     "detail": "terraform workspace prod",
+     "supports": "production"
+    }
+   ],
+   "authorization": {
+    "status": "explicit",
+    "approver": "Head of Engineering (role)",
+    "recorded_at": "2026-10-16T09:00:00Z",
+    "targets": [
+     {
+      "kind": "domain",
+      "value": "app.example.org"
+     }
+    ],
+    "allowed_activities": [
+     "active_read_only",
+     "active_authenticated",
+     "active_load"
+    ],
+    "window": {
+     "start": "2026-10-20T08:00:00Z",
+     "end": "2026-10-20T12:00:00Z"
+    },
+    "limits": {
+     "max_requests_per_second": 20,
+     "stop_conditions": [
+      "any 5xx",
+      "owner request"
+     ],
+     "rollback": "disable the test accounts"
+    },
+    "test_accounts": [
+     "qa-user-1"
+    ]
+   }
+  },
+  "classify": {
+   "environment": "production",
+   "mode": "production",
+   "confidence": "high",
+   "rules": [
+    "E05-confirmed"
+   ]
+  },
+  "checks": [
+   {
+    "activity": "active_read_only",
+    "target": "https://app.example.org/api/health",
+    "now": "2026-10-20T09:00:00Z",
+    "expect": "deny",
+    "rules": [
+     "G11-rate-over-cap"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "local-loopback",
+  "why": "a confirmed local instance may be tested on loopback; anything else needs authorization",
+  "scope": {
+   "schema_version": "1.0.0",
+   "target": {
+    "name": "shop",
+    "framework": "laravel"
+   },
+   "declared_environment": "local",
+   "evidence": [
+    {
+     "kind": "env_config",
+     "detail": ".env.example APP_ENV=local, APP_URL=http://127.0.0.1:8000",
+     "supports": "local"
+    },
+    {
+     "kind": "ci_config",
+     "detail": "docker-compose.yml dev profile",
+     "supports": "local"
+    }
+   ],
+   "authorization": {
+    "status": "none"
+   }
+  },
+  "classify": {
+   "environment": "local",
+   "mode": "local",
+   "confidence": "high",
+   "rules": [
+    "E05-confirmed"
+   ]
+  },
+  "checks": [
+   {
+    "activity": "active_fuzzing",
+    "target": "http://127.0.0.1:8000/api",
+    "now": "2026-10-20T09:00:00Z",
+    "expect": "allow",
+    "rules": [
+     "G05-local-loopback"
+    ]
+   },
+   {
+    "activity": "active_read_only",
+    "target": "https://app.example.org/",
+    "now": "2026-10-20T09:00:00Z",
+    "expect": "deny",
+    "rules": [
+     "G06-authorization-not-explicit"
+    ]
+   },
+   {
+    "activity": "sensitive_data_collection",
+    "target": "http://127.0.0.1:8000",
+    "now": "2026-10-20T09:00:00Z",
+    "expect": "deny",
+    "rules": [
+     "G06-authorization-not-explicit"
+    ]
+   }
+  ]
+ }
+]

@@ -1,6 +1,11 @@
 # Status — 2026-10-16 (v0.1.0 content, post-validation: 71 tests, 33 differential scenarios; see validation report)
+## Environment-aware assessment (added after the validation)
+Skill `environment-assessment` (13th skill) + `scripts/assessment-gate.py` + contracts `assessment-scope` / `assessment-report` + `core/assessment-coverage.yaml` + `core/assessment-quality-gate.md`. Agents gain the skill (orchestrator stage 0, auditor, architect, reviewer) and **no new permission**. `tests/assessment` (30 tests): classification, every gate rule, report validator, coverage topics, wiring, installed gate. Real sessions: 4 scenarios × Claude Code, Antigravity, OpenCode, all matching the gate after two fixes (see validation report §10). Not provided: a scanner or any tool that sends requests; automatic copy of the scope template; macOS/native Windows runs.
+
+## Documentation (added after the validation)
+`docs/USER-GUIDE.md`, `docs/COMMAND-REFERENCE.md`, `docs/EXAMPLES.md`, `docs/OWASP-COVERAGE.md` + `tests/docs/test_docs.py` (11 static checks: links/anchors, referenced paths, agent/skill names, status vocabulary, scenario and rule ids, no invented slash commands). They prove the documents are consistent with the repository, not that every described command works; each command carries its own EXECUTED/TESTED/DOCUMENTED/NOT-VERIFIED label. Suite: 82 tests green.
 ## Implemented AND executed in tests (47 tests, all green)
-- 12 skills (frontmatter, 11 mandatory sections, references) · 5 agents → 15 generated native files, drift-checked · read-only/least-privilege boundaries asserted for all 3 tools.
+- 13 skills (frontmatter, 11 mandatory sections, references) · 5 agents → 15 generated native files, drift-checked · read-only/least-privilege boundaries asserted for all 3 tools.
 - 8 event schemas + detection-rule schema: own validator + real `jsonschema` 4.23 (python:3.12 container) — samples, IPv4/IPv6, UTC, extras rejected.
 - Policies: observe-only defaults, approval gates, TTL bounds, no sole-UA/geo/score blocking, redaction patterns (incl. UUID non-match; found and fixed a PAN-regex false positive).
 - `install.sh` / `uninstall.sh` / `validate-installation.sh` in sandboxed HOMEs: dry-run, idempotency, config preservation, conflict+backup, version refusal, project pin, managed blocks, restore.

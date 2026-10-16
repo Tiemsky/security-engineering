@@ -4,7 +4,7 @@ from common import ROOT, SKILLS, frontmatter
 REQUIRED = ["Purpose", "When to invoke", "Preconditions", "Required discovery steps", "Detailed workflow", "Security constraints",
             "Implementation requirements", "Test requirements", "Failure handling", "Completion criteria", "Required report format"]
 EXPECTED = {"security-audit", "threat-modeling", "auth-hardening", "api-security", "request-observability", "bot-detection", "rate-limiting",
-            "audit-trail", "incident-response", "devsecops", "security-validation", "framework-adapter-development"}
+            "audit-trail", "incident-response", "devsecops", "security-validation", "framework-adapter-development", "environment-assessment"}
 
 class SkillTests(unittest.TestCase):
     def test_expected_skills_exist(self): self.assertEqual(set(SKILLS), EXPECTED)

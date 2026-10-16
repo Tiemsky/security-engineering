@@ -22,6 +22,7 @@ class PowerShellInstaller(unittest.TestCase):
             r = run(tmp, base + " | Select-Object -Last 1"); self.assertIn("conflict(s)", r.stdout, r.stdout + r.stderr)
             self.assertEqual(json.loads((proj / "opencode.json").read_text())["keep"], "me"); self.assertTrue((proj / "AGENTS.md").read_text().startswith("# mine"))
             r = run(tmp, base + " | Select-Object -Last 1"); self.assertIn("0 action(s)", r.stdout, r.stdout + r.stderr)
+            for f in ("assessment-gate.py", "minischema.py"): self.assertTrue((proj / ".security-engineering/shared/scripts" / f).is_file(), f)   # gate shipped by install.ps1 too
         finally: shutil.rmtree(tmp, ignore_errors=True)
 
     def test_uninstall_restores_original_state_and_keeps_user_files(self):

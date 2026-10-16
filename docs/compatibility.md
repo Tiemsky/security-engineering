@@ -12,7 +12,7 @@
 ## Decisions that follow
 - Skills use the intersection of all three formats (quoted `description`, `name`==dir, string `metadata`).
 - OpenCode reads Claude-compatible paths: when both tools are installed the installer **skips OpenCode's own skills copy** to avoid duplicate names.
-- Antigravity global skills live in `~/.gemini/config/skills/` (not `~/.agents/skills`, which has a documented crash-loop risk when overloaded). Install a small targeted set only; this project adds exactly 12.
+- Antigravity global skills live in `~/.gemini/config/skills/` (not `~/.agents/skills`, which has a documented crash-loop risk when overloaded). Install a small targeted set only; this project adds exactly 13.
 
 ## Known limitations / unverified
 - Antigravity subagent tool names beyond `view_file`, `grep_search`, `run_command` (used by working local agents) are **unverified**; the implementer's `write_to_file`/`edit_file` come from skill docs. A misspelled tool name can hang a subagent — keep read-only agents on the verified set (tested). If unsure, run the Implementer role in the main agent.

@@ -1,8 +1,9 @@
 # Orchestrator specification
-Pipeline: **Discover → Model → Plan → Implement → Validate → Review → Report.**
+Pipeline: **Scope → Discover → Model → Plan → Implement → Validate → Review → Report.**
 
 | Stage | Agent | Skills | Gate to continue |
 |---|---|---|---|
+| Scope | orchestrator | environment-assessment | environment profile + authorized scope recorded; mode chosen (`code-only` if ambiguous) |
 | Discover | architect/auditor | security-audit, framework-adapter-development | framework, auth model, entry points identified |
 | Model | architect | threat-modeling | threats ranked, assumptions listed |
 | Plan | architect | per-control skill | user approves plan, observe-only default confirmed |

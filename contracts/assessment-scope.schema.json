@@ -1,0 +1,259 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "assessment-scope.schema.json",
+  "title": "Assessment scope and environment profile (input of scripts/assessment-gate.py)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "target",
+    "declared_environment",
+    "evidence",
+    "authorization"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "pattern": "^1\\.\\d+\\.\\d+$"
+    },
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "repository": {
+          "type": "string",
+          "maxLength": 256
+        },
+        "framework": {
+          "type": "string",
+          "enum": [
+            "laravel",
+            "nestjs",
+            "generic",
+            "other"
+          ]
+        }
+      }
+    },
+    "declared_environment": {
+      "type": "string",
+      "enum": [
+        "local",
+        "staging",
+        "production",
+        "unknown"
+      ]
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "kind",
+          "detail",
+          "supports"
+        ],
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "deployment_manifest",
+              "ci_config",
+              "infra_definition",
+              "env_config",
+              "runtime_metadata",
+              "declared_by_owner",
+              "hostname",
+              "url"
+            ]
+          },
+          "detail": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "supports": {
+            "type": "string",
+            "enum": [
+              "local",
+              "staging",
+              "production"
+            ]
+          }
+        }
+      }
+    },
+    "authorization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status"
+      ],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "none",
+            "read_only",
+            "explicit"
+          ]
+        },
+        "approver": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "recorded_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "targets": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "kind",
+              "value"
+            ],
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "domain",
+                  "ip_range",
+                  "url"
+                ]
+              },
+              "value": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 256
+              }
+            }
+          }
+        },
+        "allowed_activities": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "static_analysis",
+              "passive_observation",
+              "active_read_only",
+              "active_authenticated",
+              "active_fuzzing",
+              "active_load",
+              "active_state_changing",
+              "sensitive_data_collection",
+              "exploitation",
+              "enforcement_action"
+            ]
+          }
+        },
+        "window": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "start",
+            "end"
+          ],
+          "properties": {
+            "start": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "end": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        },
+        "limits": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "max_requests_per_second": {
+              "type": "number",
+              "minimum": 0
+            },
+            "stop_conditions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 256
+              }
+            },
+            "rollback": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 512
+            }
+          }
+        },
+        "test_accounts": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          }
+        },
+        "production_exceptions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "activity",
+              "approver",
+              "safety_plan",
+              "expires"
+            ],
+            "properties": {
+              "activity": {
+                "type": "string",
+                "enum": [
+                  "static_analysis",
+                  "passive_observation",
+                  "active_read_only",
+                  "active_authenticated",
+                  "active_fuzzing",
+                  "active_load",
+                  "active_state_changing",
+                  "sensitive_data_collection",
+                  "exploitation",
+                  "enforcement_action"
+                ]
+              },
+              "approver": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "safety_plan": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "expires": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

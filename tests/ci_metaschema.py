@@ -11,3 +11,8 @@ names = {"http_access": "http-access-event", "security_event": "security-event",
 for k, ev in tc.SAMPLES.items():
     Draft202012Validator(schemas[names[k] + ".schema.json"], registry=reg, format_checker=FormatChecker()).validate(ev)
 print(f"{len(schemas)} schemas valid; {len(tc.SAMPLES)} samples valid under jsonschema")
+# assessment documents (no event envelope): scope fixtures and the sample report must also pass the real library
+_sc, _rp = schemas["assessment-scope.schema.json"], schemas["assessment-report.schema.json"]
+for s in json.loads((ROOT / "tests/fixtures/assessment/scenarios.json").read_text()): Draft202012Validator(_sc, format_checker=FormatChecker()).validate(s["scope"])
+Draft202012Validator(_rp, format_checker=FormatChecker()).validate(json.loads((ROOT / "tests/fixtures/assessment/report-code-only.json").read_text()))
+print("assessment scope fixtures and sample report valid under jsonschema")

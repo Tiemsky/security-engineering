@@ -10,3 +10,4 @@
 ## Migration log
 - 1.0.0 — initial.
 - 1.1.0 (MINOR) — `schema_version` now matches `^1\.\d+\.\d+$` (was const 1.0.0); `response_outcome.status` gains `pending_approval` (decision awaits a human; nothing executed) and `skipped_exception` (allowlisted). Producers emitting 1.0.0 stay valid.
+- Assessment documents (`assessment-scope.schema.json`, `assessment-report.schema.json`) are *not* runtime events: they have no event envelope and their own `schema_version` (pattern `^1\.\d+\.\d+$`, currently 1.0.0). Cross-field rules (e.g. "PASS needs evidence") live in `scripts/assessment-gate.py`, not in the schema.

@@ -1,0 +1,56 @@
+# Topics that EVERY report of a given mode must contain as a matrix row (any result, including NOT_TESTED with a reason).
+# Purpose: an assessment cannot silently skip a control area. Checked by `scripts/assessment-gate.py validate-report`.
+# code-only (environment unknown) uses the `local` list.
+local:
+  - threat_model
+  - authentication
+  - authorization_rbac
+  - session_management
+  - input_validation
+  - injection
+  - ssrf
+  - idor_bola
+  - business_logic
+  - deserialization_file_handling
+  - cryptography
+  - secrets
+  - dependencies
+  - container_iac
+  - cicd
+  - security_tests
+  - runtime_unverifiable
+staging:
+  - threat_model
+  - authentication
+  - authorization_rbac
+  - session_management
+  - input_validation
+  - injection
+  - ssrf
+  - idor_bola
+  - secrets
+  - dependencies
+  - tls_certificates
+  - http_headers_cors_cookies
+  - dns_exposed_services
+  - dast_api_testing
+  - rate_limiting_anti_automation
+  - reverse_proxy_waf_containers
+  - storage_database_secrets
+  - logging_audit_alerting
+  - recovery_controls
+  - finding_reproducibility
+production:
+  - external_surface_tls_dns
+  - http_headers_cors_cookies
+  - authentication_effective
+  - authorization_effective
+  - session_privilege_boundaries
+  - cloud_iam_network_segmentation
+  - containers_supply_chain
+  - secrets_management
+  - rate_limiting_abuse_controls
+  - logging_audit_alerting
+  - incident_response_readiness
+  - backups_recovery
+  - source_runtime_correlation

@@ -2,7 +2,8 @@
 Unsupported keywords raise, so a schema can never silently pass validation."""
 import ipaddress, json, pathlib, re
 
-CONTRACTS = pathlib.Path(__file__).resolve().parents[2] / "contracts"
+_here = pathlib.Path(__file__).resolve()   # repo: tests/lib/minischema.py (contracts at parents[2]); installed: <shared>/scripts/minischema.py (contracts at parents[1])
+CONTRACTS = next((p / "contracts" for p in (_here.parents[2], _here.parents[1]) if (p / "contracts").is_dir()), _here.parents[2] / "contracts")
 IGNORED = {"$schema", "$id", "$defs", "title", "description", "type", "enum", "const", "required", "properties", "additionalProperties", "items",
            "minItems", "minProperties", "pattern", "minLength", "maxLength", "minimum", "maximum", "format", "anyOf", "$ref"}
 TYPES = {"string": str, "object": dict, "array": list, "boolean": bool, "number": (int, float), "integer": int}

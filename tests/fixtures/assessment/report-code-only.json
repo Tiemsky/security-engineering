@@ -1,0 +1,284 @@
+{
+ "schema_version": "1.0.0",
+ "mode": "code-only",
+ "environment": {
+  "determined": "unknown",
+  "confidence": "low",
+  "evidence": [
+   "composer.json: laravel/framework ^12",
+   "no deployment manifest found in the repository"
+  ],
+  "limitations": [
+   "static analysis only",
+   "deployed configuration and network controls not verified"
+  ],
+  "ambiguities": [
+   "APP_URL points to a public hostname; it does not establish the environment"
+  ]
+ },
+ "matrix": [
+  {
+   "topic": "threat_model",
+   "control": "threat_model control",
+   "environment": "all",
+   "verification_scope": "static",
+   "method": "not performed",
+   "evidence": [],
+   "result": "NOT_TESTED",
+   "severity": "none",
+   "confidence": "high",
+   "reason": "no access in this assessment",
+   "remediation": "",
+   "retest": ""
+  },
+  {
+   "topic": "authentication",
+   "control": "Login throttling and uniform errors",
+   "environment": "local",
+   "verification_scope": "static",
+   "method": "read app/Http/Controllers/Auth/LoginController.php and routes/api.php; read tests/Feature/LoginThrottleTest.php",
+   "evidence": [
+    "routes/api.php:14 throttle:login",
+    "tests/Feature/LoginThrottleTest.php::test_sixth_attempt_is_429 present (not executed in this assessment)"
+   ],
+   "result": "PARTIAL",
+   "severity": "none",
+   "confidence": "medium",
+   "reason": "throttle present in code; test not executed here",
+   "remediation": "",
+   "retest": ""
+  },
+  {
+   "topic": "authorization_rbac",
+   "control": "authorization_rbac control",
+   "environment": "all",
+   "verification_scope": "static",
+   "method": "not performed",
+   "evidence": [],
+   "result": "NOT_TESTED",
+   "severity": "none",
+   "confidence": "high",
+   "reason": "no access in this assessment",
+   "remediation": "",
+   "retest": ""
+  },
+  {
+   "topic": "session_management",
+   "control": "session_management control",
+   "environment": "all",
+   "verification_scope": "static",
+   "method": "not performed",
+   "evidence": [],
+   "result": "NOT_TESTED",
+   "severity": "none",
+   "confidence": "high",
+   "reason": "no access in this assessment",
+   "remediation": "",
+   "retest": ""
+  },
+  {
+   "topic": "input_validation",
+   "control": "input_validation control",
+   "environment": "all",
+   "verification_scope": "static",
+   "method": "not performed",
+   "evidence": [],
+   "result": "NOT_TESTED",
+   "severity": "none",
+   "confidence": "high",
+   "reason": "no access in this assessment",
+   "remediation": "",
+   "retest": ""
+  },
+  {
+   "topic": "injection",
+   "control": "injection control",
+   "environment": "all",
+   "verification_scope": "static",
+   "method": "not performed",
+   "evidence": [],
+   "result": "NOT_TESTED",
+   "severity": "none",
+   "confidence": "high",
+   "reason": "no access in this assessment",
+   "remediation": "",
+   "retest": ""
+  },
+  {
+   "topic": "ssrf",
+   "control": "ssrf control",
+   "environment": "all",
+   "verification_scope": "static",
+   "method": "not performed",
+   "evidence": [],
+   "result": "NOT_TESTED",
+   "severity": "none",
+   "confidence": "high",
+   "reason": "no access in this assessment",
+   "remediation": "",
+   "retest": ""
+  },
+  {
+   "topic": "idor_bola",
+   "control": "Order lookup is scoped to the owner",
+   "environment": "local",
+   "verification_scope": "static",
+   "method": "grep find()/findOrFail() in app/Http/Controllers/OrderController.php",
+   "evidence": [
+    "app/Http/Controllers/OrderController.php:41 Order::findOrFail($id) without ownership check"
+   ],
+   "result": "FAIL",
+   "severity": "high",
+   "confidence": "high",
+   "reason": "",
+   "remediation": "authorize the object with a Policy (skill auth-hardening) and add a cross-user negative test",
+   "retest": "GET /orders/{id} as user B for user A's order must return 403/404"
+  },
+  {
+   "topic": "business_logic",
+   "control": "business_logic control",
+   "environment": "all",
+   "verification_scope": "static",
+   "method": "not performed",
+   "evidence": [],
+   "result": "NOT_TESTED",
+   "severity": "none",
+   "confidence": "high",
+   "reason": "no access in this assessment",
+   "remediation": "",
+   "retest": ""
+  },
+  {
+   "topic": "deserialization_file_handling",
+   "control": "deserialization_file_handling control",
+   "environment": "all",
+   "verification_scope": "static",
+   "method": "not performed",
+   "evidence": [],
+   "result": "NOT_TESTED",
+   "severity": "none",
+   "confidence": "high",
+   "reason": "no access in this assessment",
+   "remediation": "",
+   "retest": ""
+  },
+  {
+   "topic": "cryptography",
+   "control": "cryptography control",
+   "environment": "all",
+   "verification_scope": "static",
+   "method": "not performed",
+   "evidence": [],
+   "result": "NOT_TESTED",
+   "severity": "none",
+   "confidence": "high",
+   "reason": "no access in this assessment",
+   "remediation": "",
+   "retest": ""
+  },
+  {
+   "topic": "secrets",
+   "control": "No hard-coded credentials in tracked files",
+   "environment": "local",
+   "verification_scope": "static",
+   "method": "grep for key/token patterns in tracked files (report path and type only)",
+   "evidence": [
+    "no match in 214 tracked files"
+   ],
+   "result": "PASS",
+   "severity": "none",
+   "confidence": "medium",
+   "reason": "",
+   "remediation": "",
+   "retest": ""
+  },
+  {
+   "topic": "dependencies",
+   "control": "dependencies control",
+   "environment": "all",
+   "verification_scope": "static",
+   "method": "not performed",
+   "evidence": [],
+   "result": "NOT_TESTED",
+   "severity": "none",
+   "confidence": "high",
+   "reason": "no access in this assessment",
+   "remediation": "",
+   "retest": ""
+  },
+  {
+   "topic": "container_iac",
+   "control": "container_iac control",
+   "environment": "all",
+   "verification_scope": "static",
+   "method": "not performed",
+   "evidence": [],
+   "result": "NOT_TESTED",
+   "severity": "none",
+   "confidence": "high",
+   "reason": "no access in this assessment",
+   "remediation": "",
+   "retest": ""
+  },
+  {
+   "topic": "cicd",
+   "control": "cicd control",
+   "environment": "all",
+   "verification_scope": "static",
+   "method": "not performed",
+   "evidence": [],
+   "result": "NOT_TESTED",
+   "severity": "none",
+   "confidence": "high",
+   "reason": "no access in this assessment",
+   "remediation": "",
+   "retest": ""
+  },
+  {
+   "topic": "security_tests",
+   "control": "security_tests control",
+   "environment": "all",
+   "verification_scope": "static",
+   "method": "not performed",
+   "evidence": [],
+   "result": "NOT_TESTED",
+   "severity": "none",
+   "confidence": "high",
+   "reason": "no access in this assessment",
+   "remediation": "",
+   "retest": ""
+  },
+  {
+   "topic": "runtime_unverifiable",
+   "control": "Production TLS, WAF, cloud IAM, network exposure",
+   "environment": "production",
+   "verification_scope": "operational",
+   "method": "none: no deployed-system access in this assessment",
+   "evidence": [],
+   "result": "NOT_TESTED",
+   "severity": "none",
+   "confidence": "high",
+   "reason": "code-only assessment; deployed controls cannot be verified from source",
+   "remediation": "",
+   "retest": ""
+  }
+ ],
+ "summary": {
+  "verified_secure": [
+   "No hard-coded credentials in tracked files"
+  ],
+  "confirmed_vulnerabilities": [
+   "IDOR in OrderController::show (high)"
+  ],
+  "partially_verified": [
+   "Login throttling"
+  ],
+  "unverified": [
+   "All 'not tested' topics, in particular runtime_unverifiable"
+  ],
+  "intentionally_not_performed": [
+   "Active tests of any kind: environment not established and no authorization recorded"
+  ],
+  "statement": "One high-severity finding in the reviewed code; most topics are not tested. This is not a statement that the application is secure."
+ }
+}

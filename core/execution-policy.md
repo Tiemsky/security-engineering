@@ -5,4 +5,7 @@
 - Auditor and Reviewer agents are read-only: no file edits, no network writes, no migrations.
 - Implementer changes only files inside the approved plan; one concern per change; tests ship with the change.
 - Do not overwrite existing user config without backup and explicit approval.
+- Environment first: identify local / staging / production / unknown from verifiable evidence (`environment-assessment`); a hostname, URL or reachability proves neither the environment nor authorization. Ambiguous ⇒ code-only analysis and ask before any active test.
+- Active tests only on explicitly authorized targets, with request limits, a window, stop conditions and rollback. In production: non-destructive only; no brute force, load, account changes, data exfiltration, or live enforcement (account lock, session revocation, IP/firewall block) initiated by an agent.
+- Enforcement policies stay observe-only unless separately validated, explicitly authorized and enabled through a controlled operational process; an LLM never authorizes or overrides this.
 - Report outcomes faithfully: failures with output, skipped steps as skipped.

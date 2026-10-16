@@ -1,0 +1,242 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "assessment-report.schema.json",
+  "title": "Environment-aware assessment report (checked by scripts/assessment-gate.py validate-report)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "mode",
+    "environment",
+    "matrix",
+    "summary"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "pattern": "^1\\.\\d+\\.\\d+$"
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "code-only",
+        "local",
+        "staging",
+        "production"
+      ]
+    },
+    "environment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "determined",
+        "confidence",
+        "evidence",
+        "limitations"
+      ],
+      "properties": {
+        "determined": {
+          "type": "string",
+          "enum": [
+            "local",
+            "staging",
+            "production",
+            "unknown"
+          ]
+        },
+        "confidence": {
+          "type": "string",
+          "enum": [
+            "high",
+            "medium",
+            "low"
+          ]
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          }
+        },
+        "limitations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          }
+        },
+        "ambiguities": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          }
+        }
+      }
+    },
+    "matrix": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "topic",
+          "control",
+          "environment",
+          "verification_scope",
+          "method",
+          "evidence",
+          "result",
+          "severity",
+          "confidence",
+          "remediation",
+          "retest"
+        ],
+        "properties": {
+          "topic": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]{1,63}$"
+          },
+          "control": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "environment": {
+            "type": "string",
+            "enum": [
+              "local",
+              "staging",
+              "production",
+              "all"
+            ]
+          },
+          "verification_scope": {
+            "type": "string",
+            "enum": [
+              "static",
+              "dynamic",
+              "operational"
+            ]
+          },
+          "method": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 512
+            }
+          },
+          "result": {
+            "type": "string",
+            "enum": [
+              "PASS",
+              "FAIL",
+              "PARTIAL",
+              "NOT_TESTED",
+              "NOT_APPLICABLE"
+            ]
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "critical",
+              "high",
+              "medium",
+              "low",
+              "info",
+              "none"
+            ]
+          },
+          "confidence": {
+            "type": "string",
+            "enum": [
+              "high",
+              "medium",
+              "low"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 512
+          },
+          "remediation": {
+            "type": "string",
+            "maxLength": 1024
+          },
+          "retest": {
+            "type": "string",
+            "maxLength": 1024
+          }
+        }
+      },
+      "minItems": 1
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "verified_secure",
+        "confirmed_vulnerabilities",
+        "partially_verified",
+        "unverified",
+        "intentionally_not_performed"
+      ],
+      "properties": {
+        "verified_secure": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          }
+        },
+        "confirmed_vulnerabilities": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          }
+        },
+        "partially_verified": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          }
+        },
+        "unverified": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          }
+        },
+        "intentionally_not_performed": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          }
+        },
+        "statement": {
+          "type": "string",
+          "maxLength": 2048
+        }
+      }
+    }
+  }
+}

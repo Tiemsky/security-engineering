@@ -1,4 +1,4 @@
 ## Security engineering (security-engineering {{VERSION}})
-Read by OpenCode and Antigravity. Skills: security-audit, threat-modeling, auth-hardening, api-security, request-observability, bot-detection, rate-limiting, audit-trail, incident-response, devsecops, security-validation, framework-adapter-development.
+Read by OpenCode and Antigravity. Skills: security-audit, threat-modeling, auth-hardening, api-security, request-observability, bot-detection, rate-limiting, audit-trail, incident-response, devsecops, security-validation, framework-adapter-development, environment-assessment.
 Agents (if supported by your tool): security-architect, security-implementer, security-auditor, security-reviewer, security-orchestrator. Otherwise run the same roles sequentially and state it.
 Project settings: `.security-engineering/config.yaml`. Rules: observe-only by default; no secrets in logs/events; blocking needs approval + evidence + scope + expiry; no production tests; report Implemented / Tested / Unverified.

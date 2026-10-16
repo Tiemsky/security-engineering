@@ -137,3 +137,28 @@ Not defects but documented: Claude `security-reviewer` has `Bash` (read-only by 
 - Allowed now: pilot A (read-only audit of a test Laravel project) and pilot C (runtime wired in `observe`, test events only).
 - Blocked: any `enforce`/automatic blocking on real traffic, account lock / session revocation, global install on machines used for production work until the Windows/macOS protocol is run.
 - Before a stable tag: run the Windows protocol, run pilots A–C and record results here, decide on Redis-backed state if multi-instance, then tag. Because the validated content differs from the first delivery, tag it as **`v0.1.1`** (or a `-rc` of it) rather than `v0.1.0`; `VERSION` is still `0.1.0` pending that decision.
+
+## 10. Addendum — environment-aware assessment (local / staging / production)
+Added after the release decision above; it changes the toolkit (13th skill, gate, two contracts), so the earlier validated-content statement no longer describes HEAD. Status labels as before.
+
+**What was built** — skill `environment-assessment`; `scripts/assessment-gate.py` (deterministic `classify` / `check` / `validate-report`, no model, contacts nothing); contracts `assessment-scope` and `assessment-report` (1.0.0); `core/assessment-coverage.yaml` (required matrix topics per mode); `core/assessment-quality-gate.md` (5 capacities); orchestrator stage 0 and the skill added to orchestrator/auditor/architect/reviewer in all three tools. No agent received a new tool or permission (`tests/agents` unchanged and green).
+
+**Automated (`tests/assessment`, 30 tests)** — PASS: 13 scenarios (hostname-only, declaration-alone, single-source, conflicting evidence, staging/production/local authorized and unauthorized variants, window/scope/limits/caps/test-account/exception cases); **every one of the 21 gate rule ids is exercised by a scenario** (a guard fails otherwise); invariants (exploitation/enforcement denied everywhere, unknown environment never allows an active step, production heavy activity denied without exception, scope matching exact); report validator rules each with a mutation test; gate runs standalone from a project install (`python3 -I`).
+**Mutation checks** — 6 defects injected into the gate/validator (hostnames counted as evidence; authorization not required; production cap 50; enforcement allowed; PASS without evidence accepted; production exception check removed): each made tests fail.
+
+**Real sessions** (`tests/smoke/assessment.sh`, fictional fixtures, orchestrator agent, answer compared with the gate):
+| Tool | Result (final harness) |
+|---|---|
+| Claude Code 2.1.302 (haiku) | 4/4 match |
+| Antigravity CLI 1.4.0 | 4/4 match |
+| OpenCode 1.19.2, Docker, free third-party model `opencode/deepseek-v4.1-flash-free` | 4/4 match |
+Limits: 4 scenarios, one run per tool, three different models; LLM answers are not deterministic and this is not a proof of behaviour on other prompts or models. Agents had no shell: they applied the skill's rules by hand and said so.
+
+**Defects found by this work (fixed, regression-tested)**
+- **E1 (Medium)** the gate was not delivered to installed projects: the first Claude run reported `scripts/assessment-gate.py does not exist in this project`. Installers (sh + ps1) now copy it and its validator to `<shared>/scripts/`; `minischema.py` finds `contracts/` in both layouts; test `test_gate_runs_standalone_from_a_project_install`.
+- **E2 (Low)** the skill did not state the decision order, so Claude answered `deny` where the gate answers `needs_confirmation` for an unknown environment. The order is now explicit in the skill. Re-run: match.
+- **E3 (Low, test harness)** fixture dates (2026-10-20) contradicted the real clock; Claude correctly asked instead of answering. The live harness now shifts the scenario to today; decisions are unchanged.
+- **E4 (Low)** the "secure" claim detector flagged a negated sentence ("this is not a statement that the application is secure"); negation is now handled and tested both ways.
+
+**Not verified / not done** — active tests themselves (no agent can send requests; none was run against any target); behaviour on real projects (no pilot); macOS and native Windows for the new files; the improvement cycle of `core/assessment-quality-gate.md` is a procedure, only its automated parts are tested; the scope template is not copied by the installer.
+

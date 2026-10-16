@@ -3,6 +3,7 @@
     "security-architect": {
       "access": "read-only",
       "skills": [
+        "environment-assessment",
         "security-audit",
         "threat-modeling",
         "framework-adapter-development"
@@ -94,6 +95,7 @@
     "security-auditor": {
       "access": "read-only",
       "skills": [
+        "environment-assessment",
         "security-audit"
       ],
       "claude": {
@@ -130,6 +132,7 @@
     "security-reviewer": {
       "access": "read-only",
       "skills": [
+        "environment-assessment",
         "security-validation"
       ],
       "claude": {
@@ -175,6 +178,7 @@
       "access": "read-only",
       "source": "orchestrator.md",
       "skills": [
+        "environment-assessment",
         "security-audit",
         "security-validation"
       ],

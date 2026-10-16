@@ -1,5 +1,5 @@
 ## Security engineering (security-engineering {{VERSION}})
-- Skills: security-audit, threat-modeling, auth-hardening, api-security, request-observability, bot-detection, rate-limiting, audit-trail, incident-response, devsecops, security-validation, framework-adapter-development.
+- Skills: security-audit, threat-modeling, auth-hardening, api-security, request-observability, bot-detection, rate-limiting, audit-trail, incident-response, devsecops, security-validation, framework-adapter-development, environment-assessment.
 - Subagents: security-architect, security-implementer, security-auditor, security-reviewer, security-orchestrator. Auditor/Reviewer are read-only; Implementer runs only after the user approves a plan.
 - Project settings: `.security-engineering/config.yaml` (framework, exceptions, verify commands, pinned version).
 - Rules: detection/response starts in `observe`; never log secrets/tokens/OTPs/cookies; blocking actions need explicit approval, evidence, scope and expiry; no production tests; report Implemented / Tested / Unverified.

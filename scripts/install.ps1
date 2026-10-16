@@ -80,6 +80,8 @@ function Install-Skills($target) { Get-ChildItem (Join-Path $Src 'skills') -Dire
 
 Say "shared resources -> $SharedDir"
 foreach ($d in 'core','contracts','policies') { Install-Tree (Join-Path $Src $d) (Join-Path $SharedDir $d) }
+Install-File (Join-Path $Src 'scripts/assessment-gate.py') (Join-Path $SharedDir 'scripts/assessment-gate.py')
+Install-File (Join-Path $Src 'tests/lib/minischema.py') (Join-Path $SharedDir 'scripts/minischema.py')
 if (Has 'claude') { Say 'claude-code'; if ($InstallSkills) { Install-Skills (Join-Path $ClaudeDir 'skills') }; Install-Tree (Join-Path $Src 'adapters/claude-code/agents') (Join-Path $ClaudeDir 'agents') }
 if (Has 'opencode') {
   Say 'opencode'
