@@ -1,0 +1,29 @@
+policy_version: "1.0.0"
+forbidden_fields:        # key names (case-insensitive, substring) whose values are always replaced
+  - password
+  - passwd
+  - secret
+  - otp
+  - pin
+  - token
+  - authorization
+  - cookie
+  - set-cookie
+  - api_key
+  - apikey
+  - x-api-key
+  - card
+  - cvv
+  - iban
+  - private_key
+  - refresh
+forbidden_value_patterns:   # regexes applied to string values
+  - '(?i)bearer\s+[a-z0-9._~+/=-]{8,}'
+  - '\beyJ[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\b'   # JWT
+  - '\b\d{13,19}\b'                                                        # possible PAN (contiguous)
+  - '\b\d{4}([ -])\d{4}\1\d{4}\1\d{1,7}\b'                                 # possible PAN (grouped); must not match UUIDs
+  - '(?i)(sk|pk|rk)_(live|test)_[a-z0-9]{8,}'
+replacement: "[REDACTED]"
+body_capture: none            # default: never capture request/response bodies
+query_string: drop_values     # keep parameter names only
+max_string_length: 512

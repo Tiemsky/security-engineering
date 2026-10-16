@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "http-access-event.schema.json",
+  "title": "HTTP access event",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "event_id",
+    "event_type",
+    "timestamp",
+    "source",
+    "retention",
+    "redaction",
+    "request_id",
+    "client_ip",
+    "method",
+    "route",
+    "status",
+    "duration_ms"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1.0.0"
+    },
+    "event_id": {
+      "$ref": "common.schema.json#/$defs/uuid"
+    },
+    "event_type": {
+      "type": "string",
+      "const": "http_access"
+    },
+    "timestamp": {
+      "$ref": "common.schema.json#/$defs/timestamp_utc"
+    },
+    "request_id": {
+      "type": "string",
+      "maxLength": 128
+    },
+    "trace_id": {
+      "$ref": "common.schema.json#/$defs/hex_trace"
+    },
+    "span_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{16}$"
+    },
+    "source": {
+      "$ref": "common.schema.json#/$defs/source"
+    },
+    "retention": {
+      "$ref": "common.schema.json#/$defs/retention"
+    },
+    "redaction": {
+      "$ref": "common.schema.json#/$defs/redaction"
+    },
+    "extensions": {
+      "type": "object",
+      "description": "Framework-specific data; must not contain sensitive values"
+    },
+    "client_ip": {
+      "$ref": "common.schema.json#/$defs/ip"
+    },
+    "method": {
+      "type": "string",
+      "enum": [
+        "GET",
+        "POST",
+        "PUT",
+        "PATCH",
+        "DELETE",
+        "HEAD",
+        "OPTIONS"
+      ]
+    },
+    "route": {
+      "type": "string",
+      "maxLength": 256,
+      "description": "Route TEMPLATE e.g. /users/{id}, never raw URL with ids/query"
+    },
+    "status": {
+      "type": "integer",
+      "minimum": 100,
+      "maximum": 599
+    },
+    "duration_ms": {
+      "type": "number",
+      "minimum": 0
+    },
+    "response_bytes": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "user_agent": {
+      "type": "string",
+      "maxLength": 256
+    },
+    "actor": {
+      "$ref": "common.schema.json#/$defs/ref"
+    },
+    "auth_method": {
+      "type": "string",
+      "enum": [
+        "none",
+        "session",
+        "bearer",
+        "api_key",
+        "basic",
+        "other"
+      ]
+    }
+  }
+}

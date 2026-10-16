@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "response-outcome.schema.json",
+  "title": "Automated response outcome",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "event_id",
+    "event_type",
+    "timestamp",
+    "source",
+    "retention",
+    "redaction",
+    "decision_event_id",
+    "action",
+    "status",
+    "idempotency_key"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1.0.0"
+    },
+    "event_id": {
+      "$ref": "common.schema.json#/$defs/uuid"
+    },
+    "event_type": {
+      "type": "string",
+      "const": "response_outcome"
+    },
+    "timestamp": {
+      "$ref": "common.schema.json#/$defs/timestamp_utc"
+    },
+    "request_id": {
+      "type": "string",
+      "maxLength": 128
+    },
+    "trace_id": {
+      "$ref": "common.schema.json#/$defs/hex_trace"
+    },
+    "span_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{16}$"
+    },
+    "source": {
+      "$ref": "common.schema.json#/$defs/source"
+    },
+    "retention": {
+      "$ref": "common.schema.json#/$defs/retention"
+    },
+    "redaction": {
+      "$ref": "common.schema.json#/$defs/redaction"
+    },
+    "extensions": {
+      "type": "object",
+      "description": "Framework-specific data; must not contain sensitive values"
+    },
+    "decision_event_id": {
+      "$ref": "common.schema.json#/$defs/uuid"
+    },
+    "action": {
+      "type": "string",
+      "maxLength": 64
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "applied",
+        "skipped_duplicate",
+        "skipped_observe_only",
+        "failed",
+        "expired",
+        "rolled_back"
+      ]
+    },
+    "idempotency_key": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 200
+    },
+    "expires_at": {
+      "$ref": "common.schema.json#/$defs/timestamp_utc"
+    },
+    "error": {
+      "type": "string",
+      "maxLength": 256
+    },
+    "rollback_ref": {
+      "type": "string",
+      "maxLength": 128
+    }
+  }
+}

@@ -1,0 +1,5 @@
+# Real NestJS (Express) app deps used ONLY to execute the integration scenarios (never shipped).
+FROM node:24-alpine
+RUN apk add --no-cache python3 py3-yaml
+WORKDIR /app
+RUN npm init -y >/dev/null && npm i --save-exact --silent @nestjs/common@11 @nestjs/core@11 @nestjs/platform-express@11 rxjs@7 reflect-metadata@0.2 tsx@4 typescript@5 @types/node

@@ -1,0 +1,6 @@
+# Real Laravel app used ONLY to execute the integration scenarios (never shipped).
+FROM php:8.4-cli-alpine
+RUN apk add --no-cache git unzip python3 py3-yaml
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+RUN composer create-project "laravel/laravel:^12.0" /app --no-interaction --prefer-dist -q
+WORKDIR /app

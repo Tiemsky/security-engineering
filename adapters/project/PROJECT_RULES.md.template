@@ -1,0 +1,6 @@
+# Project security rules (security-engineering {{VERSION}})
+Source of truth for settings: `.security-engineering/config.yaml`.
+1. Use the installed security skills for any auth, API, rate-limit, logging or CI/CD change.
+2. Never log or emit secrets, tokens, OTPs, cookies, Authorization headers, payment data.
+3. Detection/response rules stay in `observe` until a human promotes them.
+4. Run the project's verify commands before claiming a change is secure; report what was not run.

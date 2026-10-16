@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "system-health-event.schema.json",
+  "title": "System health event",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "event_id",
+    "event_type",
+    "timestamp",
+    "source",
+    "retention",
+    "redaction",
+    "component",
+    "status"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1.0.0"
+    },
+    "event_id": {
+      "$ref": "common.schema.json#/$defs/uuid"
+    },
+    "event_type": {
+      "type": "string",
+      "const": "system_health"
+    },
+    "timestamp": {
+      "$ref": "common.schema.json#/$defs/timestamp_utc"
+    },
+    "request_id": {
+      "type": "string",
+      "maxLength": 128
+    },
+    "trace_id": {
+      "$ref": "common.schema.json#/$defs/hex_trace"
+    },
+    "span_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{16}$"
+    },
+    "source": {
+      "$ref": "common.schema.json#/$defs/source"
+    },
+    "retention": {
+      "$ref": "common.schema.json#/$defs/retention"
+    },
+    "redaction": {
+      "$ref": "common.schema.json#/$defs/redaction"
+    },
+    "extensions": {
+      "type": "object",
+      "description": "Framework-specific data; must not contain sensitive values"
+    },
+    "component": {
+      "type": "string",
+      "enum": [
+        "event_sink",
+        "rate_limit_store",
+        "detector",
+        "audit_writer",
+        "response_executor",
+        "queue"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "ok",
+        "degraded",
+        "failed"
+      ]
+    },
+    "detail": {
+      "type": "string",
+      "maxLength": 256
+    },
+    "dropped_events": {
+      "type": "integer",
+      "minimum": 0
+    }
+  }
+}

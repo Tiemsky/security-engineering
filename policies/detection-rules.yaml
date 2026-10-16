@@ -1,0 +1,94 @@
+# Validated against contracts/detection-rule.schema.json. All rules ship in observe mode.
+rules:
+  - id: authn.stuffing-ip
+    version: "1.0.0"
+    description: One IP failing logins across many distinct accounts (credential stuffing).
+    signal: failed_logins_per_ip_distinct_accounts
+    group_by: ip_prefix64
+    window_seconds: 600
+    threshold: 30
+    min_distinct: 10
+    evidence_required: [client_ip, failed_count, distinct_accounts, window]
+    supporting_only: [user_agent]
+    mode: observe
+    action: rate_limit
+    severity: high
+    exceptions: [allowlist_cidrs, shared_ip_aware]
+    enabled: true
+  - id: authn.account-spray
+    version: "1.0.0"
+    description: One account failing logins from many IPs (distributed brute force).
+    signal: failed_logins_per_account_distinct_ips
+    group_by: account
+    window_seconds: 900
+    threshold: 20
+    min_distinct: 8
+    evidence_required: [account_ref, failed_count, distinct_ips, window]
+    mode: observe
+    action: manual_review
+    severity: high
+    enabled: true
+  - id: otp.verify-bruteforce
+    version: "1.0.0"
+    description: Repeated wrong OTP attempts for one identifier.
+    signal: otp_failures_per_identifier
+    group_by: account
+    window_seconds: 600
+    threshold: 5
+    evidence_required: [account_ref, failed_count, window]
+    mode: observe
+    action: rate_limit
+    severity: medium
+    enabled: true
+  - id: enum.sequential-ids
+    version: "1.0.0"
+    description: Authenticated token walking sequential object ids with many 403/404.
+    signal: sequential_id_walk
+    group_by: token
+    window_seconds: 300
+    threshold: 40
+    evidence_required: [actor_ref, route, distinct_ids, deny_ratio]
+    mode: observe
+    action: alert
+    severity: medium
+    enabled: true
+  - id: scan.not-found-burst
+    version: "1.0.0"
+    description: Burst of 404s on distinct paths typical of scanners.
+    signal: not_found_burst
+    group_by: ip
+    window_seconds: 120
+    threshold: 60
+    min_distinct: 30
+    evidence_required: [client_ip, distinct_paths, window]
+    supporting_only: [user_agent]
+    mode: observe
+    action: alert
+    severity: low
+    exceptions: [allowlist_cidrs]
+    enabled: true
+  - id: trap.honeypot-hit
+    version: "1.0.0"
+    description: Request to a honeypot route/field that no legitimate client uses.
+    signal: honeypot_hit
+    group_by: ip
+    window_seconds: 3600
+    threshold: 1
+    evidence_required: [client_ip, route]
+    mode: observe
+    action: temp_ip_block
+    severity: medium
+    exceptions: [allowlist_cidrs, shared_ip_aware]
+    enabled: true
+  - id: webhook.bad-signature
+    version: "1.0.0"
+    description: Repeated invalid webhook signatures from one source.
+    signal: signature_failures_per_source
+    group_by: ip
+    window_seconds: 600
+    threshold: 10
+    evidence_required: [client_ip, failed_count, endpoint]
+    mode: observe
+    action: alert
+    severity: medium
+    enabled: true

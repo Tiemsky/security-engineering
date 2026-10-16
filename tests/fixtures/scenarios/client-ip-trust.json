@@ -1,0 +1,35 @@
+{
+ "description": "XFF ignored from untrusted peer; honoured from trusted proxy",
+ "config": {
+  "trusted_proxies": [
+   "10.0.0.0/8"
+  ]
+ },
+ "steps": [
+  {
+   "t": 0,
+   "peer": "198.18.0.5",
+   "xff": "203.0.113.50",
+   "method": "GET",
+   "path": "/health",
+   "expect_client_ip": "198.18.0.5"
+  },
+  {
+   "t": 1,
+   "peer": "10.0.0.1",
+   "xff": "203.0.113.77, 10.0.0.2",
+   "method": "GET",
+   "path": "/health",
+   "expect_client_ip": "203.0.113.77"
+  },
+  {
+   "t": 2,
+   "peer": "10.0.0.1",
+   "xff": "2001:DB8::1",
+   "method": "GET",
+   "path": "/health",
+   "expect_client_ip": "2001:db8::1"
+  }
+ ],
+ "expect_events": []
+}

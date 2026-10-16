@@ -1,0 +1,8 @@
+{
+  "name": "@security-engineering/nestjs-runtime",
+  "version": "0.1.0",
+  "description": "Reference NestJS runtime for security-engineering contracts (observe-only by default)",
+  "main": "src/index.ts",
+  "license": "MIT",
+  "peerDependencies": { "@nestjs/common": "^10 || ^11", "@nestjs/core": "^10 || ^11", "rxjs": "^7" }
+}

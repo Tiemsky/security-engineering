@@ -1,0 +1,16 @@
+# Every automated action: scope, TTL, evidence, idempotency, approval, rollback.
+actions:
+  observe:           {reversible: true,  requires_approval: false, max_ttl_seconds: 0,     scopes: [ip, ip_prefix64, account, token, tenant], min_evidence: 1, rollback: none_needed}
+  alert:             {reversible: true,  requires_approval: false, max_ttl_seconds: 0,     scopes: [ip, ip_prefix64, account, token, tenant], min_evidence: 1, rollback: none_needed}
+  rate_limit:        {reversible: true,  requires_approval: false, max_ttl_seconds: 3600,  scopes: [ip, ip_prefix64, account, token],         min_evidence: 2, rollback: ttl_expiry}
+  challenge:         {reversible: true,  requires_approval: false, max_ttl_seconds: 3600,  scopes: [ip, account, session],                    min_evidence: 2, rollback: ttl_expiry, supported_only_if: challenge_provider_configured}
+  temp_ip_block:     {reversible: true,  requires_approval: false, max_ttl_seconds: 86400, scopes: [ip, ip_prefix64],                          min_evidence: 3, rollback: ttl_expiry_or_manual_unblock, approval_if: [scope_is_ip_prefix64, shared_ip_suspected]}
+  session_revocation: {reversible: false, requires_approval: true,  max_ttl_seconds: 0,     scopes: [session, account],                         min_evidence: 3, rollback: user_relogin}
+  account_lock:      {reversible: true,  requires_approval: true,  max_ttl_seconds: 86400, scopes: [account],                                  min_evidence: 3, rollback: ttl_expiry_or_manual_unlock, notify_owner: true}
+  manual_review:     {reversible: true,  requires_approval: false, max_ttl_seconds: 0,     scopes: [ip, ip_prefix64, account, token, tenant], min_evidence: 1, rollback: none_needed}
+idempotency:
+  key_format: "{rule_id}:{rule_version}:{scope_kind}:{scope_value}:{window_start_epoch}"
+  duplicate_behavior: skip_and_record     # outcome status skipped_duplicate
+records:
+  decision_event: security-decision.schema.json
+  outcome_event: response-outcome.schema.json

@@ -1,0 +1,317 @@
+{
+ "description": "Failures spread over one IPv6 /64 aggregate under ip_prefix64",
+ "config": {},
+ "steps": [
+  {
+   "t": 0,
+   "ip": "2001:db8:1:2::1",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user0",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 2,
+   "ip": "2001:db8:1:2::2",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user1",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 4,
+   "ip": "2001:db8:1:2::3",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user2",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 6,
+   "ip": "2001:db8:1:2::4",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user3",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 8,
+   "ip": "2001:db8:1:2::5",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user4",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 10,
+   "ip": "2001:db8:1:2::6",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user5",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 12,
+   "ip": "2001:db8:1:2::7",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user6",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 14,
+   "ip": "2001:db8:1:2::8",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user7",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 16,
+   "ip": "2001:db8:1:2::9",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user8",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 18,
+   "ip": "2001:db8:1:2::a",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user9",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 20,
+   "ip": "2001:db8:1:2::b",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user10",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 22,
+   "ip": "2001:db8:1:2::c",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user11",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 24,
+   "ip": "2001:db8:1:2::d",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user0",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 26,
+   "ip": "2001:db8:1:2::e",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user1",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 28,
+   "ip": "2001:db8:1:2::f",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user2",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 30,
+   "ip": "2001:db8:1:2::10",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user3",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 32,
+   "ip": "2001:db8:1:2::11",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user4",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 34,
+   "ip": "2001:db8:1:2::12",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user5",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 36,
+   "ip": "2001:db8:1:2::13",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user6",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 38,
+   "ip": "2001:db8:1:2::14",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user7",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 40,
+   "ip": "2001:db8:1:2::15",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user8",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 42,
+   "ip": "2001:db8:1:2::16",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user9",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 44,
+   "ip": "2001:db8:1:2::17",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user10",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 46,
+   "ip": "2001:db8:1:2::18",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user11",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 48,
+   "ip": "2001:db8:1:2::19",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user0",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 50,
+   "ip": "2001:db8:1:2::1a",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user1",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 52,
+   "ip": "2001:db8:1:2::1b",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user2",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 54,
+   "ip": "2001:db8:1:2::1c",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user3",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 56,
+   "ip": "2001:db8:1:2::1d",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user4",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 58,
+   "ip": "2001:db8:1:2::1e",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user5",
+    "password": "wrong"
+   }
+  }
+ ],
+ "expect_events": [
+  {
+   "rule_id": "authn.stuffing-ip",
+   "decision": "would_act",
+   "action": "rate_limit",
+   "scope_kind": "ip_prefix64",
+   "scope_value": "2001:db8:1:2::/64",
+   "mode": "observe",
+   "status": "skipped_observe_only"
+  }
+ ]
+}

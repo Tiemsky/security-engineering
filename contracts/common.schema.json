@@ -1,0 +1,142 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "common.schema.json",
+  "$defs": {
+    "uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+    },
+    "timestamp_utc": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "Z$",
+      "description": "RFC3339 UTC, must end in Z"
+    },
+    "ip": {
+      "type": "string",
+      "anyOf": [
+        {
+          "format": "ipv4"
+        },
+        {
+          "format": "ipv6"
+        }
+      ],
+      "description": "Normalized text form, IPv4 or IPv6, resolved via trusted proxies only"
+    },
+    "severity": {
+      "type": "string",
+      "enum": [
+        "info",
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ]
+    },
+    "semver": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "ref": {
+      "type": "object",
+      "required": [
+        "type",
+        "id"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "id": {
+          "type": "string",
+          "maxLength": 128,
+          "description": "Opaque id or salted hash; never email/phone in clear"
+        },
+        "tenant_id": {
+          "type": "string",
+          "maxLength": 128
+        }
+      }
+    },
+    "hex_trace": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{32}$"
+    },
+    "retention": {
+      "type": "object",
+      "required": [
+        "class",
+        "days"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "class": {
+          "type": "string",
+          "enum": [
+            "short",
+            "standard",
+            "long",
+            "legal"
+          ]
+        },
+        "days": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 3650
+        }
+      }
+    },
+    "redaction": {
+      "type": "object",
+      "required": [
+        "applied",
+        "policy_version"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "applied": {
+          "type": "boolean",
+          "const": true
+        },
+        "policy_version": {
+          "$ref": "#/$defs/semver"
+        }
+      }
+    },
+    "source": {
+      "type": "object",
+      "required": [
+        "framework",
+        "service",
+        "environment"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "framework": {
+          "type": "string",
+          "enum": [
+            "laravel",
+            "nestjs",
+            "generic"
+          ]
+        },
+        "service": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "environment": {
+          "type": "string",
+          "enum": [
+            "local",
+            "ci",
+            "staging",
+            "production"
+          ]
+        }
+      }
+    }
+  }
+}

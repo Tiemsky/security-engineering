@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "security-event.schema.json",
+  "title": "Security event",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "event_id",
+    "event_type",
+    "timestamp",
+    "source",
+    "retention",
+    "redaction",
+    "severity",
+    "classification",
+    "category",
+    "summary"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1.0.0"
+    },
+    "event_id": {
+      "$ref": "common.schema.json#/$defs/uuid"
+    },
+    "event_type": {
+      "type": "string",
+      "const": "security_event"
+    },
+    "timestamp": {
+      "$ref": "common.schema.json#/$defs/timestamp_utc"
+    },
+    "request_id": {
+      "type": "string",
+      "maxLength": 128
+    },
+    "trace_id": {
+      "$ref": "common.schema.json#/$defs/hex_trace"
+    },
+    "span_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{16}$"
+    },
+    "source": {
+      "$ref": "common.schema.json#/$defs/source"
+    },
+    "retention": {
+      "$ref": "common.schema.json#/$defs/retention"
+    },
+    "redaction": {
+      "$ref": "common.schema.json#/$defs/redaction"
+    },
+    "extensions": {
+      "type": "object",
+      "description": "Framework-specific data; must not contain sensitive values"
+    },
+    "severity": {
+      "$ref": "common.schema.json#/$defs/severity"
+    },
+    "classification": {
+      "type": "string",
+      "enum": [
+        "authn_failure",
+        "authz_denied",
+        "rate_limited",
+        "validation_abuse",
+        "signature_failure",
+        "enumeration",
+        "scanner",
+        "anomaly",
+        "config_risk",
+        "other"
+      ]
+    },
+    "category": {
+      "type": "string",
+      "maxLength": 64
+    },
+    "summary": {
+      "type": "string",
+      "maxLength": 512
+    },
+    "client_ip": {
+      "$ref": "common.schema.json#/$defs/ip"
+    },
+    "actor": {
+      "$ref": "common.schema.json#/$defs/ref"
+    },
+    "target": {
+      "$ref": "common.schema.json#/$defs/ref"
+    },
+    "rule_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]{2,63}$"
+    },
+    "rule_version": {
+      "$ref": "common.schema.json#/$defs/semver"
+    },
+    "evidence": {
+      "type": "object"
+    }
+  }
+}

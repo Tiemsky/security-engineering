@@ -1,0 +1,22 @@
+policy_version: "1.0.0"
+mode: observe                  # global default: nothing is enforced until a rule is promoted explicitly
+enforcement:
+  allow_llm_as_authority: false   # LLM output may summarize/propose, never trigger an action
+  require_approval_for: [account_lock, session_revocation_bulk, temp_ip_block_broad, any_irreversible]
+  sole_signal_forbidden: [user_agent, geo, risk_score]
+  max_block_ttl_seconds: 86400
+  default_block_ttl_seconds: 900
+exceptions:
+  shared_ip_aware: true           # per-IP actions on IPs seen with many distinct legitimate accounts need manual_review
+  shared_ip_min_distinct_accounts: 20
+  allowlist_cidrs: []             # approved infrastructure only (health checks, office); every entry needs owner+expiry in project config
+retention_days:
+  http_access: 30
+  security: 180
+  audit: 730
+  system_health: 30
+  deployment: 365
+failure_mode:
+  detector_error: fail_open       # never block legitimate traffic because the detector failed
+  rate_limit_store_error_general: fail_open
+  rate_limit_store_error_credentials: fail_closed

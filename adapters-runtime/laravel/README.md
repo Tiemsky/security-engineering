@@ -1,0 +1,2 @@
+# Laravel runtime (reference)
+Native pieces: global middleware (`HttpAccessMiddleware::handle/terminate`), service provider (container singletons, config), queue-friendly `Sink` interface (swap `MemorySink` for a queued/log sink via `SafeSink`). Integration run: `tests/integration/run_laravel.sh <outdir>` (Docker, php:8.4 + laravel/laravel ^12). Policies/Gates for authorization are application code — apply skill `auth-hardening`; this package supplies the observability, decision and enforcement path.

@@ -1,0 +1,57 @@
+{
+ "description": "5 failures: no decision",
+ "config": {},
+ "steps": [
+  {
+   "t": 0,
+   "ip": "203.0.113.50",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "alice",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 30,
+   "ip": "203.0.113.50",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "alice",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 60,
+   "ip": "203.0.113.50",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "alice",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 90,
+   "ip": "203.0.113.50",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "alice",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 120,
+   "ip": "203.0.113.50",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "alice",
+    "password": "wrong"
+   }
+  }
+ ],
+ "expect_events": []
+}

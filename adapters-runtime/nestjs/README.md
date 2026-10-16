@@ -1,0 +1,2 @@
+# NestJS runtime (reference)
+Native pieces: `SecurityMiddleware` (request id, trusted-proxy IP, enforcement gate), `AccessInterceptor` (route template + access event), `AccessExceptionFilter` (error responses without internals + access event), `SecurityModule.register()`. Integration run: `tests/integration/run_nestjs.sh <outdir>` (Docker, node 24, @nestjs/* 11, Express). Guards/authorization are application code — apply skill `auth-hardening`.

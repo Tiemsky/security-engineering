@@ -1,0 +1,145 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "security-decision.schema.json",
+  "title": "Security decision",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "event_id",
+    "event_type",
+    "timestamp",
+    "source",
+    "retention",
+    "redaction",
+    "rule_id",
+    "rule_version",
+    "mode",
+    "decision",
+    "action",
+    "evidence",
+    "scope",
+    "idempotency_key"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1.0.0"
+    },
+    "event_id": {
+      "$ref": "common.schema.json#/$defs/uuid"
+    },
+    "event_type": {
+      "type": "string",
+      "const": "security_decision"
+    },
+    "timestamp": {
+      "$ref": "common.schema.json#/$defs/timestamp_utc"
+    },
+    "request_id": {
+      "type": "string",
+      "maxLength": 128
+    },
+    "trace_id": {
+      "$ref": "common.schema.json#/$defs/hex_trace"
+    },
+    "span_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{16}$"
+    },
+    "source": {
+      "$ref": "common.schema.json#/$defs/source"
+    },
+    "retention": {
+      "$ref": "common.schema.json#/$defs/retention"
+    },
+    "redaction": {
+      "$ref": "common.schema.json#/$defs/redaction"
+    },
+    "extensions": {
+      "type": "object",
+      "description": "Framework-specific data; must not contain sensitive values"
+    },
+    "rule_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]{2,63}$"
+    },
+    "rule_version": {
+      "$ref": "common.schema.json#/$defs/semver"
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "observe",
+        "alert",
+        "enforce"
+      ]
+    },
+    "decision": {
+      "type": "string",
+      "enum": [
+        "none",
+        "would_act",
+        "act",
+        "manual_review",
+        "suppressed_exception"
+      ]
+    },
+    "action": {
+      "type": "string",
+      "enum": [
+        "observe",
+        "alert",
+        "rate_limit",
+        "challenge",
+        "temp_ip_block",
+        "session_revocation",
+        "account_lock",
+        "manual_review"
+      ]
+    },
+    "evidence": {
+      "type": "object",
+      "minProperties": 1
+    },
+    "scope": {
+      "type": "object",
+      "required": [
+        "kind",
+        "value"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "ip",
+            "ip_prefix64",
+            "account",
+            "session",
+            "token",
+            "tenant"
+          ]
+        },
+        "value": {
+          "type": "string",
+          "maxLength": 128
+        }
+      }
+    },
+    "expires_at": {
+      "$ref": "common.schema.json#/$defs/timestamp_utc"
+    },
+    "idempotency_key": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 200
+    },
+    "requires_approval": {
+      "type": "boolean"
+    },
+    "approved_by": {
+      "$ref": "common.schema.json#/$defs/ref"
+    }
+  }
+}

@@ -1,0 +1,110 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "detection-rule.schema.json",
+  "title": "Detection rule",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "version",
+    "description",
+    "signal",
+    "window_seconds",
+    "threshold",
+    "evidence_required",
+    "mode",
+    "action"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]{2,63}$"
+    },
+    "version": {
+      "$ref": "common.schema.json#/$defs/semver"
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 512
+    },
+    "signal": {
+      "type": "string",
+      "enum": [
+        "failed_logins_per_ip_distinct_accounts",
+        "failed_logins_per_account_distinct_ips",
+        "otp_failures_per_identifier",
+        "sequential_id_walk",
+        "not_found_burst",
+        "honeypot_hit",
+        "signature_failures_per_source",
+        "request_rate_per_key"
+      ]
+    },
+    "group_by": {
+      "type": "string",
+      "enum": [
+        "ip",
+        "ip_prefix64",
+        "account",
+        "token",
+        "tenant"
+      ]
+    },
+    "window_seconds": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 86400
+    },
+    "threshold": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "min_distinct": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "evidence_required": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "supporting_only": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "user_agent",
+          "geo",
+          "risk_score"
+        ]
+      },
+      "description": "Signals that may never trigger an action alone"
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "observe",
+        "alert",
+        "enforce"
+      ]
+    },
+    "action": {
+      "type": "string",
+      "pattern": "^[a-z_]+$"
+    },
+    "severity": {
+      "$ref": "common.schema.json#/$defs/severity"
+    },
+    "exceptions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "enabled": {
+      "type": "boolean"
+    }
+  }
+}

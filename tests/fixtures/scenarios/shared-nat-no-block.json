@@ -1,0 +1,567 @@
+{
+ "description": "25 distinct legit accounts behind one IP then 30 failures \u2192 manual_review, never block",
+ "config": {},
+ "steps": [
+  {
+   "t": 0,
+   "ip": "198.51.100.7",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "legit0",
+    "password": "correct-horse"
+   }
+  },
+  {
+   "t": 1,
+   "ip": "198.51.100.7",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "legit1",
+    "password": "correct-horse"
+   }
+  },
+  {
+   "t": 2,
+   "ip": "198.51.100.7",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "legit2",
+    "password": "correct-horse"
+   }
+  },
+  {
+   "t": 3,
+   "ip": "198.51.100.7",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "legit3",
+    "password": "correct-horse"
+   }
+  },
+  {
+   "t": 4,
+   "ip": "198.51.100.7",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "legit4",
+    "password": "correct-horse"
+   }
+  },
+  {
+   "t": 5,
+   "ip": "198.51.100.7",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "legit5",
+    "password": "correct-horse"
+   }
+  },
+  {
+   "t": 6,
+   "ip": "198.51.100.7",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "legit6",
+    "password": "correct-horse"
+   }
+  },
+  {
+   "t": 7,
+   "ip": "198.51.100.7",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "legit7",
+    "password": "correct-horse"
+   }
+  },
+  {
+   "t": 8,
+   "ip": "198.51.100.7",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "legit8",
+    "password": "correct-horse"
+   }
+  },
+  {
+   "t": 9,
+   "ip": "198.51.100.7",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "legit9",
+    "password": "correct-horse"
+   }
+  },
+  {
+   "t": 10,
+   "ip": "198.51.100.7",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "legit10",
+    "password": "correct-horse"
+   }
+  },
+  {
+   "t": 11,
+   "ip": "198.51.100.7",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "legit11",
+    "password": "correct-horse"
+   }
+  },
+  {
+   "t": 12,
+   "ip": "198.51.100.7",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "legit12",
+    "password": "correct-horse"
+   }
+  },
+  {
+   "t": 13,
+   "ip": "198.51.100.7",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "legit13",
+    "password": "correct-horse"
+   }
+  },
+  {
+   "t": 14,
+   "ip": "198.51.100.7",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "legit14",
+    "password": "correct-horse"
+   }
+  },
+  {
+   "t": 15,
+   "ip": "198.51.100.7",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "legit15",
+    "password": "correct-horse"
+   }
+  },
+  {
+   "t": 16,
+   "ip": "198.51.100.7",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "legit16",
+    "password": "correct-horse"
+   }
+  },
+  {
+   "t": 17,
+   "ip": "198.51.100.7",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "legit17",
+    "password": "correct-horse"
+   }
+  },
+  {
+   "t": 18,
+   "ip": "198.51.100.7",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "legit18",
+    "password": "correct-horse"
+   }
+  },
+  {
+   "t": 19,
+   "ip": "198.51.100.7",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "legit19",
+    "password": "correct-horse"
+   }
+  },
+  {
+   "t": 20,
+   "ip": "198.51.100.7",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "legit20",
+    "password": "correct-horse"
+   }
+  },
+  {
+   "t": 21,
+   "ip": "198.51.100.7",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "legit21",
+    "password": "correct-horse"
+   }
+  },
+  {
+   "t": 22,
+   "ip": "198.51.100.7",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "legit22",
+    "password": "correct-horse"
+   }
+  },
+  {
+   "t": 23,
+   "ip": "198.51.100.7",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "legit23",
+    "password": "correct-horse"
+   }
+  },
+  {
+   "t": 24,
+   "ip": "198.51.100.7",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "legit24",
+    "password": "correct-horse"
+   }
+  },
+  {
+   "t": 100,
+   "ip": "198.51.100.7",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "typo0",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 102,
+   "ip": "198.51.100.7",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "typo1",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 104,
+   "ip": "198.51.100.7",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "typo2",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 106,
+   "ip": "198.51.100.7",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "typo3",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 108,
+   "ip": "198.51.100.7",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "typo4",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 110,
+   "ip": "198.51.100.7",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "typo5",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 112,
+   "ip": "198.51.100.7",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "typo6",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 114,
+   "ip": "198.51.100.7",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "typo7",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 116,
+   "ip": "198.51.100.7",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "typo8",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 118,
+   "ip": "198.51.100.7",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "typo9",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 120,
+   "ip": "198.51.100.7",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "typo10",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 122,
+   "ip": "198.51.100.7",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "typo11",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 124,
+   "ip": "198.51.100.7",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "typo0",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 126,
+   "ip": "198.51.100.7",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "typo1",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 128,
+   "ip": "198.51.100.7",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "typo2",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 130,
+   "ip": "198.51.100.7",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "typo3",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 132,
+   "ip": "198.51.100.7",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "typo4",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 134,
+   "ip": "198.51.100.7",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "typo5",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 136,
+   "ip": "198.51.100.7",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "typo6",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 138,
+   "ip": "198.51.100.7",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "typo7",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 140,
+   "ip": "198.51.100.7",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "typo8",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 142,
+   "ip": "198.51.100.7",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "typo9",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 144,
+   "ip": "198.51.100.7",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "typo10",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 146,
+   "ip": "198.51.100.7",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "typo11",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 148,
+   "ip": "198.51.100.7",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "typo0",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 150,
+   "ip": "198.51.100.7",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "typo1",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 152,
+   "ip": "198.51.100.7",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "typo2",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 154,
+   "ip": "198.51.100.7",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "typo3",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 156,
+   "ip": "198.51.100.7",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "typo4",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 158,
+   "ip": "198.51.100.7",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "typo5",
+    "password": "wrong"
+   }
+  }
+ ],
+ "expect_events": [
+  {
+   "rule_id": "authn.stuffing-ip",
+   "decision": "manual_review",
+   "action": "manual_review",
+   "scope_kind": "ip",
+   "scope_value": "198.51.100.7",
+   "mode": "observe",
+   "status": "skipped_observe_only"
+  }
+ ]
+}

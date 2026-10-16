@@ -1,0 +1,38 @@
+name: ci
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  static-and-unit:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4          # pin to a commit SHA in your org policy
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - run: pip install -r requirements-dev.txt
+      - name: Generated adapters are up to date
+        run: python3 scripts/build-adapters.py --check
+      - name: Full JSON Schema meta-validation (jsonschema library)
+        run: python3 tests/ci_metaschema.py
+      - name: Unit tests (skills, contracts, policies, agents, installer)
+        run: SE_SKIP_DOCKER=1 PYTHONPATH=tests/lib python3 -m unittest discover -s tests -p 'test_*.py' -t tests -v
+  runtime-integration:
+    runs-on: ubuntu-24.04      # Docker is preinstalled: real Laravel + real NestJS, shared scenarios, cross-framework comparison
+    needs: static-and-unit
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - run: pip install -r requirements-dev.txt
+      - run: SE_REQUIRE_DOCKER=1 PYTHONPATH=tests/lib python3 -m unittest tests.integration.test_runtime -v
+        working-directory: .
+  dependency-security:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - run: pip install pip-audit && pip-audit -r requirements-dev.txt
+      - name: Audit the NestJS test-harness dependencies
+        run: |
+          cd adapters-runtime/nestjs && npm audit --omit=dev || true   # runtime has only peerDependencies; harness deps are pinned in tests/integration/docker/Dockerfile.nestjs

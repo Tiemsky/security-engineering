@@ -1,0 +1,27 @@
+{
+ "description": "Honeypot hit from allowlisted monitoring CIDR is suppressed",
+ "config": {
+  "allowlist_cidrs": [
+   "192.0.2.0/24"
+  ]
+ },
+ "steps": [
+  {
+   "t": 0,
+   "ip": "192.0.2.10",
+   "method": "GET",
+   "path": "/wp-admin.php"
+  }
+ ],
+ "expect_events": [
+  {
+   "rule_id": "trap.honeypot-hit",
+   "decision": "suppressed_exception",
+   "action": "observe",
+   "scope_kind": "ip",
+   "scope_value": "192.0.2.10",
+   "mode": "observe",
+   "status": "skipped_observe_only"
+  }
+ ]
+}

@@ -1,0 +1,15 @@
+# Project-level security-engineering settings (commit this file; never put secrets here).
+security_engineering_version: "{{VERSION}}"   # pinned; update with: install.sh --mode project --allow-version-change
+framework: "{{FRAMEWORK}}"                    # laravel | nestjs | generic (auto-detected at install)
+mode: observe                                 # observe | alert | enforce — promote per rule after false-positive review
+auth:
+  mechanism: ""                               # e.g. sanctum, passport, jwt, session
+  authorization: ""                           # e.g. laravel-policies, nest-guards
+  multi_tenant: false
+trusted_proxies: []                           # CIDRs of your reverse proxies / CDN
+exceptions:                                   # approved only; each needs owner + expiry
+  allowlist_cidrs: []
+  # - {cidr: "198.51.100.0/24", owner: "ops", reason: "uptime monitor", expires: "2027-01-01"}
+verify_commands:                              # local/CI only, never production
+  tests: ""                                   # e.g. php artisan test | npm test
+  audit: ""                                   # e.g. composer audit | npm audit --omit=dev
