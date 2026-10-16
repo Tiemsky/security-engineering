@@ -38,11 +38,22 @@ def main(outdir, fws):
             blob = json.dumps(lines)
             for s in sc.get("forbidden_substrings", []):
                 if s in blob: failures.append(f"{tag}: LEAKED {s}")
-            http = [l for l in lines if l["type"] == "http"]; steps = [s for s in sc["steps"] if s.get("op") != "sweep"]
-            for h, s in zip(http, steps):
+            http = [l for l in lines if l["type"] == "http"]
+            for h in http:
+                s = sc["steps"][h["step"]]
                 if "expect_status" in s and h["status"] != s["expect_status"]: failures.append(f"{tag}: step {h['step']} status {h['status']} != {s['expect_status']}")
                 if "expect_client_ip" in s and h["client_ip"] != s["expect_client_ip"]: failures.append(f"{tag}: step {h['step']} client_ip {h['client_ip']} != {s['expect_client_ip']}")
             if sc.get("expect_http_status", {}).get("all") and any(h["status"] != sc["expect_http_status"]["all"] for h in http): failures.append(f"{tag}: unexpected http status")
+            for a in [l for l in lines if l["type"] == "assert"]:
+                exp = sc["steps"][a["step"]]["expect"]; got = a["got"]
+                ok = (got >= exp["min"] if "min" in exp else got <= exp["max"]) if isinstance(exp, dict) else got == exp
+                if not ok: failures.append(f"{tag}: assert step {a['step']} {a['what']}: got {got!r}, expected {exp!r}")
+            if sc.get("expect_requires_approval"):
+                ds = [l["event"] for l in lines if l["type"] == "event" and l["event"]["event_type"] == "security_decision"]
+                if not ds or not all(x["requires_approval"] for x in ds): failures.append(f"{tag}: every decision here must require approval")
+            if "expect_health" in sc:
+                nh = sum(1 for l in lines if l["type"] == "event" and l["event"]["event_type"] == "system_health")
+                if nh != sc["expect_health"]: failures.append(f"{tag}: system_health events {nh} != {sc['expect_health']}")
             norm = normalize(lines); results[fw] = norm
             if norm != sc["expect_events"]: failures.append(f"{tag}: events differ\n  got      {norm}\n  expected {sc['expect_events']}")
             print(f"{'ok  ' if not [f for f in failures if f.startswith(tag)] else 'FAIL'} {tag}  ({len(lines)} lines)")

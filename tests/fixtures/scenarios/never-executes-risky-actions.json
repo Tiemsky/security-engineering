@@ -1,0 +1,138 @@
+{
+ "description": "account_lock, session_revocation and challenge are NEVER executed by the runtime: manual_review + approval + pending_approval, nothing active",
+ "config": {
+  "mode": "enforce",
+  "extra_rules": [
+   {
+    "id": "x.lock-account",
+    "version": "1.0.0",
+    "description": "test rule",
+    "signal": "failed_logins_per_account_distinct_ips",
+    "group_by": "account",
+    "window_seconds": 600,
+    "threshold": 3,
+    "evidence_required": [
+     "x"
+    ],
+    "mode": "enforce",
+    "action": "account_lock",
+    "enabled": true,
+    "min_distinct": 3
+   },
+   {
+    "id": "x.revoke-session",
+    "version": "1.0.0",
+    "description": "test rule",
+    "signal": "signature_failures_per_source",
+    "group_by": "ip",
+    "window_seconds": 600,
+    "threshold": 3,
+    "evidence_required": [
+     "x"
+    ],
+    "mode": "enforce",
+    "action": "session_revocation",
+    "enabled": true
+   },
+   {
+    "id": "x.challenge",
+    "version": "1.0.0",
+    "description": "test rule",
+    "signal": "request_rate_per_key",
+    "group_by": "ip",
+    "window_seconds": 600,
+    "threshold": 3,
+    "evidence_required": [
+     "x"
+    ],
+    "mode": "enforce",
+    "action": "challenge",
+    "enabled": true
+   }
+  ]
+ },
+ "steps": [
+  {
+   "t": 0,
+   "op": "burst",
+   "n": 3,
+   "event": {
+    "kind": "login_failed",
+    "ip": "198.51.100.{i}",
+    "account": "acct-1"
+   }
+  },
+  {
+   "t": 1,
+   "op": "burst",
+   "n": 3,
+   "event": {
+    "kind": "signature_failed",
+    "ip": "198.51.100.9"
+   }
+  },
+  {
+   "t": 2,
+   "op": "burst",
+   "n": 3,
+   "event": {
+    "kind": "request",
+    "ip": "198.51.100.10"
+   }
+  },
+  {
+   "t": 3,
+   "op": "assert",
+   "what": "active",
+   "kind": "account",
+   "value": "acct-1",
+   "expect": false
+  },
+  {
+   "t": 3,
+   "op": "assert",
+   "what": "active",
+   "kind": "ip",
+   "value": "198.51.100.9",
+   "expect": false
+  },
+  {
+   "t": 3,
+   "op": "assert",
+   "what": "active",
+   "kind": "ip",
+   "value": "198.51.100.10",
+   "expect": false
+  }
+ ],
+ "expect_events": [
+  {
+   "rule_id": "x.lock-account",
+   "decision": "manual_review",
+   "action": "account_lock",
+   "scope_kind": "account",
+   "scope_value": "acct-1",
+   "mode": "enforce",
+   "status": "pending_approval"
+  },
+  {
+   "rule_id": "x.revoke-session",
+   "decision": "manual_review",
+   "action": "session_revocation",
+   "scope_kind": "ip",
+   "scope_value": "198.51.100.9",
+   "mode": "enforce",
+   "status": "pending_approval"
+  },
+  {
+   "rule_id": "x.challenge",
+   "decision": "manual_review",
+   "action": "challenge",
+   "scope_kind": "ip",
+   "scope_value": "198.51.100.10",
+   "mode": "enforce",
+   "status": "pending_approval"
+  }
+ ],
+ "expect_requires_approval": true
+}

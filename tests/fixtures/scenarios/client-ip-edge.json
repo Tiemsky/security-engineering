@@ -1,0 +1,66 @@
+{
+ "description": "Garbage/zone/mapped/non-canonical addresses resolve identically in both frameworks",
+ "config": {
+  "trusted_proxies": [
+   "10.0.0.0/8"
+  ]
+ },
+ "steps": [
+  {
+   "t": 0,
+   "peer": "10.0.0.1",
+   "xff": "garbage, not-an-ip",
+   "method": "GET",
+   "path": "/health",
+   "expect_client_ip": "10.0.0.1"
+  },
+  {
+   "t": 1,
+   "peer": "10.0.0.1",
+   "xff": "::ffff:203.0.113.5",
+   "method": "GET",
+   "path": "/health",
+   "expect_client_ip": "::ffff:203.0.113.5"
+  },
+  {
+   "t": 2,
+   "peer": "10.0.0.1",
+   "xff": "203.0.113.5, 198.51.100.1, 10.0.0.2",
+   "method": "GET",
+   "path": "/health",
+   "expect_client_ip": "198.51.100.1"
+  },
+  {
+   "t": 3,
+   "peer": "10.0.0.1",
+   "xff": "fe80::1%eth0",
+   "method": "GET",
+   "path": "/health",
+   "expect_client_ip": "10.0.0.1"
+  },
+  {
+   "t": 4,
+   "peer": "198.18.0.5",
+   "xff": "10.0.0.9",
+   "method": "GET",
+   "path": "/health",
+   "expect_client_ip": "198.18.0.5"
+  },
+  {
+   "t": 5,
+   "peer": "2001:db8::0:1",
+   "method": "GET",
+   "path": "/health",
+   "expect_client_ip": "2001:db8::1"
+  },
+  {
+   "t": 6,
+   "peer": "10.0.0.1",
+   "xff": "2001:0DB8:0000:0000:0000:0000:0000:0001",
+   "method": "GET",
+   "path": "/health",
+   "expect_client_ip": "2001:db8::1"
+  }
+ ],
+ "expect_events": []
+}

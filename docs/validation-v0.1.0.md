@@ -1,4 +1,4 @@
-# Validation report — v0.1.0 (in progress: phases A, B and C done)
+# Validation report — v0.1.0 (in progress: phases A–D done)
 Status legend: **PASS** (executed, evidence kept) · **FAIL** · **NOT VERIFIED** · tests labelled *real session* ran in the actual tool.
 
 ## 1. Baseline (Phase A, no file modified)
@@ -48,8 +48,36 @@ Tool-set statements for OpenCode/Antigravity come partly from the model's self-r
 - **D4** directory pruning (`rmdir -p`; same logic in the first PowerShell draft) could climb above the install location. Pruning now stops at tool roots.
 - **D5** Windows had no uninstaller: `scripts/uninstall.ps1` added.
 
-## 5b. Not yet done (phases D–F)
-Engine rollback/partial-failure/malformed-event tests, extended Laravel/NestJS differential scenarios, `account_lock`/`session_revocation` status, release recommendation.
+## 5b. Engine hardening and resilience (Phase D) — Laravel 12.70 and NestJS 11.2 in Docker, same inputs
+23 shared scenarios (9 before + 14 new) × 2 frameworks = 46 runs, all schema-valid, redaction-checked and **identical across frameworks**.
+| Requirement | Scenario | Result |
+|---|---|---|
+| Rollback executed, final state verified, idempotent, same-window repeats not re-blocked | rollback-flow | PASS |
+| Partial failure / retry: failed action releases key, recovers when store recovers; gives up after 3; never blocks (fail-open); no partial state | retry-after-recovery, enforce-store-failure-fail-open | PASS |
+| Duplicate / replayed event: no double execution; flood of 12 000 repeats → 1 decision, 1 notice, memory capped, state pruned | stuffing-observe, flood-bounded-memory | PASS |
+| Malformed/unknown signals (10 shapes incl. zone-id IP, control chars, 300-char id, arrays) rejected, counted, health-logged once per reason | malformed-signals | PASS |
+| Timestamps/expiry: window edge exclusive (no-trigger at 600 s, trigger at 599 s), block inactive exactly at `expires_at`, new window ⇒ new decision | window-edge-*, expiry-boundary, repeat-attack-new-window | PASS |
+| Secrets masked (bearer-like id) and enforcement separate for redacted ids | secret-in-signal, redacted-identifier-no-collision | PASS |
+| IP & trusted proxies: garbage/zone/mapped/non-canonical/untrusted-peer cases | client-ip-edge, client-ip-trust | PASS |
+| observe / alert / enforce / manual_review separated | stuffing-observe, mode-alert, enforce-and-expire, shared-nat-no-block | PASS |
+| `account_lock`, `session_revocation`, `challenge` never executed: manual_review + approval + `pending_approval`, nothing active | never-executes-risky-actions | PASS (policy-level only; no real lock/revocation exists) |
+| Sink (log) outage does not break requests or enforcement | sink-failure-survives | PASS |
+| Redis unavailable / worker unavailable | — | **NOT APPLICABLE to v0.1.0**: the runtime has no Redis store nor worker; state is per-process memory (documented in `adapters-runtime/generic/README.md`). Only the action-store outage hook is exercised |
+**Mutation check**: re-introducing three defects (enforcement keyed on the redacted scope; no retry after failure; executor running non-executable actions) made the corresponding scenarios fail → the tests are not vacuous.
+Laravel/NestJS divergences found and removed (not masked): IPv4-mapped IPv6 notation (`::ffff:a.b.c.d` vs hex groups) and zone-id acceptance differed in the TypeScript IP code; both now match PHP.
+### Defects found in Phase D (all fixed)
+- **D6** enforcement state was keyed on the *redacted* scope: two PAN-like identifiers (≥13 digits, e.g. phone numbers) collapsed into `[REDACTED]` and shared one block. Now keyed on the raw scope.
+- **D7** a failed action consumed its idempotency key, leaving the attack unmitigated for the whole window. Now retried (≤ 3).
+- **D8** one `skipped_duplicate` event per repeated request = log amplification under flood. Now one notice per key.
+- **D9** windows/idempotency keys/shared-IP records were never pruned (unbounded memory); per-key list uncapped. Now pruned in `sweep()` and capped.
+- **D10** sink exceptions propagated out of the engine into the request. Now swallowed and counted.
+- **D11** malformed signals were not validated (could throw or be miscounted). Now rejected and counted.
+- **D12** manual-review and allow-listed outcomes were mislabelled `skipped_observe_only`. Contract 1.1.0 adds `pending_approval` and `skipped_exception` (MINOR, 1.0.0 events stay valid).
+### Limits that remain
+Single-process memory only (restart loses windows/blocks; multi-instance counters diverge); no real account-lock/session-revocation/challenge executor; the engine trusts the caller for opaque identifiers.
+
+## 5c. Not yet done (phases E–F)
+Extended differential scenarios beyond the 23 above (e.g. per-rule coverage of all 8 signals), final release recommendation, tag decision.
 
 ## 6. Reproduce
 `tests/run_all.sh` (47→48 tests) · `tests/smoke/opencode.sh <dir> [--with-model <m>]` (Docker) · `tests/smoke/claude.sh <dir>` · `tests/smoke/antigravity.sh <dir>` (real sessions, consume quota).

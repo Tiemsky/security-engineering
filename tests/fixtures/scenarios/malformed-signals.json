@@ -1,0 +1,102 @@
+{
+ "description": "Malformed/unknown signals are rejected, counted, never reach rules; one health event per reason per minute; valid int ids are accepted",
+ "config": {},
+ "steps": [
+  {
+   "t": 0,
+   "op": "signal",
+   "event": "garbage"
+  },
+  {
+   "t": 0,
+   "op": "signal",
+   "event": [
+    1,
+    2
+   ]
+  },
+  {
+   "t": 0,
+   "op": "signal",
+   "event": {}
+  },
+  {
+   "t": 0,
+   "op": "signal",
+   "event": {
+    "kind": "nope"
+   }
+  },
+  {
+   "t": 0,
+   "op": "signal",
+   "event": {
+    "kind": "login_failed",
+    "ip": "999.1.1.1",
+    "account": "a"
+   }
+  },
+  {
+   "t": 0,
+   "op": "signal",
+   "event": {
+    "kind": "login_failed",
+    "ip": "1.2.3.4"
+   }
+  },
+  {
+   "t": 0,
+   "op": "signal",
+   "event": {
+    "kind": "login_failed",
+    "ip": "1.2.3.4",
+    "account": [
+     "x"
+    ]
+   }
+  },
+  {
+   "t": 0,
+   "op": "signal",
+   "event": {
+    "kind": "honeypot",
+    "ip": "fe80::1%eth0"
+   }
+  },
+  {
+   "t": 0,
+   "op": "signal",
+   "event": {
+    "kind": "login_failed",
+    "ip": "1.2.3.4",
+    "account": "a\u0000b"
+   }
+  },
+  {
+   "t": 0,
+   "op": "signal",
+   "event": {
+    "kind": "login_failed",
+    "ip": "1.2.3.4",
+    "account": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+   }
+  },
+  {
+   "t": 0,
+   "op": "signal",
+   "event": {
+    "kind": "login_failed",
+    "ip": "1.2.3.4",
+    "account": 12345
+   }
+  },
+  {
+   "t": 1,
+   "op": "assert",
+   "what": "rejected",
+   "expect": 10
+  }
+ ],
+ "expect_health": 4,
+ "expect_events": []
+}

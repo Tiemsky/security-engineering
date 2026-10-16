@@ -18,7 +18,7 @@ final class SecurityEngineeringServiceProvider extends ServiceProvider
             $load = fn($n) => json_decode(file_get_contents("$dir/$n.json"), true, 512, JSON_THROW_ON_ERROR);
             $defaults = $load('defaults');
             $defaults['exceptions']['allowlist_cidrs'] = array_merge($defaults['exceptions']['allowlist_cidrs'], config('security-engineering.allowlist_cidrs', []));
-            return ['defaults' => $defaults, 'rules' => $load('detection-rules')['rules'], 'actions' => $load('response-actions'), 'redaction' => $load('redaction'),
+            return ['defaults' => $defaults, 'rules' => array_merge($load('detection-rules')['rules'], config('security-engineering.extra_rules', [])), 'actions' => $load('response-actions'), 'redaction' => $load('redaction'),
                     'trusted_proxies' => config('security-engineering.trusted_proxies', []), 'mode' => config('security-engineering.mode')];
         });
         $this->app->singleton('se.clock', fn() => fn(): int => now()->getTimestamp());

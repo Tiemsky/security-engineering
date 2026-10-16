@@ -561,7 +561,7 @@
    "scope_kind": "ip",
    "scope_value": "198.51.100.7",
    "mode": "observe",
-   "status": "skipped_observe_only"
+   "status": "pending_approval"
   }
  ]
 }

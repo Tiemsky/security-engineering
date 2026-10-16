@@ -1,0 +1,66 @@
+{
+ "description": "Two long numeric ids (PAN-like -> redacted in events) must keep SEPARATE enforcement state",
+ "config": {
+  "mode": "enforce"
+ },
+ "steps": [
+  {
+   "t": 0,
+   "op": "burst",
+   "n": 5,
+   "event": {
+    "kind": "otp_failed",
+    "account": "2250102030405"
+   }
+  },
+  {
+   "t": 1,
+   "op": "burst",
+   "n": 5,
+   "event": {
+    "kind": "otp_failed",
+    "account": "2250102030406"
+   }
+  },
+  {
+   "t": 2,
+   "op": "assert",
+   "what": "active",
+   "kind": "account",
+   "value": "2250102030405",
+   "expect": true
+  },
+  {
+   "t": 2,
+   "op": "assert",
+   "what": "active",
+   "kind": "account",
+   "value": "2250102030406",
+   "expect": true
+  }
+ ],
+ "forbidden_substrings": [
+  "2250102030405",
+  "2250102030406"
+ ],
+ "expect_events": [
+  {
+   "rule_id": "otp.verify-bruteforce",
+   "decision": "act",
+   "action": "rate_limit",
+   "scope_kind": "account",
+   "scope_value": "[REDACTED]",
+   "mode": "enforce",
+   "status": "applied"
+  },
+  {
+   "rule_id": "otp.verify-bruteforce",
+   "decision": "act",
+   "action": "rate_limit",
+   "scope_kind": "account",
+   "scope_value": "[REDACTED]",
+   "mode": "enforce",
+   "status": "applied"
+  }
+ ]
+}

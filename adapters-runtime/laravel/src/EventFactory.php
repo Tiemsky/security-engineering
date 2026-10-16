@@ -10,7 +10,7 @@ final class EventFactory
     {
         $fields = $this->redactor->redact($fields);
         return array_merge([
-            'schema_version' => '1.0.0',
+            'schema_version' => '1.1.0',
             'event_id' => self::uuid(),
             'event_type' => $type,
             'timestamp' => gmdate('Y-m-d\TH:i:s\Z', ($this->clock)()),

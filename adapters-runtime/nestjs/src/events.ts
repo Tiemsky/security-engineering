@@ -10,7 +10,7 @@ export class EventFactory {
   constructor(private clock: () => number, private redactor: Redactor, private service: string, private environment: string, private policyVersion: string) {}
   make(type: string, fields: Record<string, any>, retentionClass: string, days: number) {
     return {
-      schema_version: '1.0.0', event_id: randomUUID(), event_type: type,
+      schema_version: '1.1.0', event_id: randomUUID(), event_type: type,
       timestamp: new Date(this.clock() * 1000).toISOString().replace(/\.\d{3}Z$/, 'Z'), trace_id: randomBytes(16).toString('hex'),
       source: { framework: 'nestjs', service: this.service, environment: this.environment },
       retention: { class: retentionClass, days }, redaction: { applied: true, policy_version: this.policyVersion },

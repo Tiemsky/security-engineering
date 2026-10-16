@@ -21,7 +21,7 @@
    "scope_kind": "ip",
    "scope_value": "192.0.2.10",
    "mode": "observe",
-   "status": "skipped_observe_only"
+   "status": "skipped_exception"
   }
  ]
 }

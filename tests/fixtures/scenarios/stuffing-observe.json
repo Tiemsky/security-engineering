@@ -1,5 +1,5 @@
 {
- "description": "30 failures/12 accounts from one IPv4 \u2192 one would_act decision, nothing enforced, 2 duplicates skipped",
+ "description": "30 failures/12 accounts from one IPv4 \u2192 one would_act decision, nothing enforced; duplicates produce ONE notice, not one per request",
  "config": {},
  "steps": [
   {
@@ -332,9 +332,6 @@
    "scope_value": "203.0.113.9",
    "mode": "observe",
    "status": "skipped_observe_only"
-  },
-  {
-   "outcome_only": "skipped_duplicate"
   },
   {
    "outcome_only": "skipped_duplicate"

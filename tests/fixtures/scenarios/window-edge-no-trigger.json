@@ -1,0 +1,307 @@
+{
+ "description": "29 failures at t=0..28 and the 30th at t=600: window is exclusive at now-600 -> no trigger",
+ "config": {},
+ "steps": [
+  {
+   "t": 0,
+   "ip": "203.0.113.70",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user0",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 1,
+   "ip": "203.0.113.70",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user1",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 2,
+   "ip": "203.0.113.70",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user2",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 3,
+   "ip": "203.0.113.70",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user3",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 4,
+   "ip": "203.0.113.70",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user4",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 5,
+   "ip": "203.0.113.70",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user5",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 6,
+   "ip": "203.0.113.70",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user6",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 7,
+   "ip": "203.0.113.70",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user7",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 8,
+   "ip": "203.0.113.70",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user8",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 9,
+   "ip": "203.0.113.70",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user9",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 10,
+   "ip": "203.0.113.70",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user10",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 11,
+   "ip": "203.0.113.70",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user11",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 12,
+   "ip": "203.0.113.70",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user0",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 13,
+   "ip": "203.0.113.70",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user1",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 14,
+   "ip": "203.0.113.70",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user2",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 15,
+   "ip": "203.0.113.70",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user3",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 16,
+   "ip": "203.0.113.70",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user4",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 17,
+   "ip": "203.0.113.70",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user5",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 18,
+   "ip": "203.0.113.70",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user6",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 19,
+   "ip": "203.0.113.70",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user7",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 20,
+   "ip": "203.0.113.70",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user8",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 21,
+   "ip": "203.0.113.70",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user9",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 22,
+   "ip": "203.0.113.70",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user10",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 23,
+   "ip": "203.0.113.70",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user11",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 24,
+   "ip": "203.0.113.70",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user0",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 25,
+   "ip": "203.0.113.70",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user1",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 26,
+   "ip": "203.0.113.70",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user2",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 27,
+   "ip": "203.0.113.70",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user3",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 28,
+   "ip": "203.0.113.70",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user4",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 600,
+   "ip": "203.0.113.70",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user5",
+    "password": "wrong"
+   }
+  }
+ ],
+ "expect_events": []
+}

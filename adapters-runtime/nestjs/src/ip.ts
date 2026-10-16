@@ -5,7 +5,7 @@ function toBytes(ip: string): number[] | null {
   if (v === 4) return ip.trim().split('.').map(Number);
   if (v !== 6) return null;
   let s = ip.trim().toLowerCase();
-  const zone = s.indexOf('%'); if (zone >= 0) s = s.slice(0, zone);
+  if (s.includes('%')) return null;   // zone identifiers are not valid client addresses (PHP inet_pton rejects them too)
   const m = s.match(/^(.*:)(\d+\.\d+\.\d+\.\d+)$/);
   if (m) { const q = m[2].split('.').map(Number); s = m[1] + ((q[0] << 8) | q[1]).toString(16) + ':' + ((q[2] << 8) | q[3]).toString(16); }
   const [head, tail] = s.split('::');
@@ -16,6 +16,7 @@ function toBytes(ip: string): number[] | null {
 
 function fromBytes(b: number[]): string {
   if (b.length === 4) return b.join('.');
+  if (b.slice(0, 10).every((x) => x === 0) && b[10] === 0xff && b[11] === 0xff) return `::ffff:${b.slice(12).join('.')}`;   // canonical IPv4-mapped form, as PHP inet_ntop
   const g: number[] = []; for (let i = 0; i < 16; i += 2) g.push((b[i] << 8) | b[i + 1]);
   let best = -1, bestLen = 0;
   for (let i = 0; i < 8;) { if (g[i] !== 0) { i++; continue; } let j = i; while (j < 8 && g[j] === 0) j++; if (j - i > bestLen) { best = i; bestLen = j - i; } i = j; }

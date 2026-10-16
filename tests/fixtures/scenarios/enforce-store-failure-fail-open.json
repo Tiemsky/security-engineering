@@ -1,5 +1,5 @@
 {
- "description": "Action store outage \u2192 outcome failed, traffic NOT blocked",
+ "description": "Action store outage \u2192 3 failed attempts (retry policy), then give up with one duplicate notice; traffic is NEVER blocked (fail-open)",
  "config": {
   "mode": "enforce",
   "store_failure": true
@@ -306,11 +306,79 @@
    }
   },
   {
+   "t": 60,
+   "ip": "203.0.113.88",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user6",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 62,
+   "ip": "203.0.113.88",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user7",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 64,
+   "ip": "203.0.113.88",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user8",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 66,
+   "ip": "203.0.113.88",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user9",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 68,
+   "ip": "203.0.113.88",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user10",
+    "password": "wrong"
+   }
+  },
+  {
    "t": 70,
+   "ip": "203.0.113.88",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user11",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 80,
    "ip": "203.0.113.88",
    "method": "GET",
    "path": "/health",
    "expect_status": 200
+  },
+  {
+   "t": 80,
+   "op": "assert",
+   "what": "active",
+   "kind": "ip",
+   "value": "203.0.113.88",
+   "expect": false
   }
  ],
  "expect_events": [
@@ -322,6 +390,27 @@
    "scope_value": "203.0.113.88",
    "mode": "enforce",
    "status": "failed"
+  },
+  {
+   "rule_id": "authn.stuffing-ip",
+   "decision": "act",
+   "action": "rate_limit",
+   "scope_kind": "ip",
+   "scope_value": "203.0.113.88",
+   "mode": "enforce",
+   "status": "failed"
+  },
+  {
+   "rule_id": "authn.stuffing-ip",
+   "decision": "act",
+   "action": "rate_limit",
+   "scope_kind": "ip",
+   "scope_value": "203.0.113.88",
+   "mode": "enforce",
+   "status": "failed"
+  },
+  {
+   "outcome_only": "skipped_duplicate"
   }
  ]
 }

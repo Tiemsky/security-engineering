@@ -54,6 +54,14 @@ class ContractTests(unittest.TestCase):
         for r in yaml.safe_load((ROOT / "policies/detection-rules.yaml").read_text())["rules"]:
             self.assertEqual(validate(r, schema), [], r["id"])
 
+    def test_one_zero_zero_and_one_one_zero_both_valid_but_major_two_rejected(self):   # compatibility rule
+        for v, ok in [("1.0.0", True), ("1.1.0", True), ("1.9.3", True), ("2.0.0", False), ("1.x", False)]:
+            e = copy.deepcopy(SAMPLES["http_access"]); e["schema_version"] = v; self.assertEqual(validate_event(e) == [], ok, v)
+
+    def test_new_outcome_statuses(self):
+        for st in ("pending_approval", "skipped_exception"):
+            e = copy.deepcopy(SAMPLES["response_outcome"]); e["status"] = st; self.assertEqual(validate_event(e), [])
+
     def test_version_and_compat_doc(self):
-        self.assertEqual(SAMPLES["http_access"]["schema_version"], load("http-access-event.schema.json")["properties"]["schema_version"]["const"])
+        self.assertRegex(load("http-access-event.schema.json")["properties"]["schema_version"]["pattern"], r"1")
         self.assertIn("MAJOR", (ROOT / "contracts/COMPATIBILITY.md").read_text())

@@ -1,0 +1,59 @@
+{
+ "description": "12,000 repeats in one window: one decision, ONE duplicate notice, window list capped at 10,000, state fully pruned by sweep",
+ "config": {},
+ "steps": [
+  {
+   "t": 0,
+   "op": "burst",
+   "n": 12000,
+   "per_second": 40,
+   "event": {
+    "kind": "login_failed",
+    "ip": "203.0.113.99",
+    "account": "user{i%12}"
+   }
+  },
+  {
+   "t": 300,
+   "op": "assert",
+   "what": "duplicates_suppressed",
+   "expect": 11970
+  },
+  {
+   "t": 300,
+   "op": "assert",
+   "what": "max_window_entries",
+   "expect": 10000
+  },
+  {
+   "t": 3000,
+   "op": "sweep"
+  },
+  {
+   "t": 3000,
+   "op": "assert",
+   "what": "windows",
+   "expect": 0
+  },
+  {
+   "t": 3000,
+   "op": "assert",
+   "what": "idempotency_keys",
+   "expect": 0
+  }
+ ],
+ "expect_events": [
+  {
+   "rule_id": "authn.stuffing-ip",
+   "decision": "would_act",
+   "action": "rate_limit",
+   "scope_kind": "ip",
+   "scope_value": "203.0.113.99",
+   "mode": "observe",
+   "status": "skipped_observe_only"
+  },
+  {
+   "outcome_only": "skipped_duplicate"
+  }
+ ]
+}

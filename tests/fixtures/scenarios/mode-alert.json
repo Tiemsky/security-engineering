@@ -1,0 +1,326 @@
+{
+ "description": "alert mode: decision is act with action alert; nothing is blocked",
+ "config": {
+  "mode": "alert"
+ },
+ "steps": [
+  {
+   "t": 0,
+   "ip": "203.0.113.63",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user0",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 2,
+   "ip": "203.0.113.63",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user1",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 4,
+   "ip": "203.0.113.63",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user2",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 6,
+   "ip": "203.0.113.63",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user3",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 8,
+   "ip": "203.0.113.63",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user4",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 10,
+   "ip": "203.0.113.63",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user5",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 12,
+   "ip": "203.0.113.63",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user6",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 14,
+   "ip": "203.0.113.63",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user7",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 16,
+   "ip": "203.0.113.63",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user8",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 18,
+   "ip": "203.0.113.63",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user9",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 20,
+   "ip": "203.0.113.63",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user10",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 22,
+   "ip": "203.0.113.63",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user11",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 24,
+   "ip": "203.0.113.63",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user0",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 26,
+   "ip": "203.0.113.63",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user1",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 28,
+   "ip": "203.0.113.63",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user2",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 30,
+   "ip": "203.0.113.63",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user3",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 32,
+   "ip": "203.0.113.63",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user4",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 34,
+   "ip": "203.0.113.63",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user5",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 36,
+   "ip": "203.0.113.63",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user6",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 38,
+   "ip": "203.0.113.63",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user7",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 40,
+   "ip": "203.0.113.63",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user8",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 42,
+   "ip": "203.0.113.63",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user9",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 44,
+   "ip": "203.0.113.63",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user10",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 46,
+   "ip": "203.0.113.63",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user11",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 48,
+   "ip": "203.0.113.63",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user0",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 50,
+   "ip": "203.0.113.63",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user1",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 52,
+   "ip": "203.0.113.63",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user2",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 54,
+   "ip": "203.0.113.63",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user3",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 56,
+   "ip": "203.0.113.63",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user4",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 58,
+   "ip": "203.0.113.63",
+   "method": "POST",
+   "path": "/login",
+   "json": {
+    "account": "user5",
+    "password": "wrong"
+   }
+  },
+  {
+   "t": 70,
+   "ip": "203.0.113.63",
+   "method": "GET",
+   "path": "/health",
+   "expect_status": 200
+  }
+ ],
+ "expect_events": [
+  {
+   "rule_id": "authn.stuffing-ip",
+   "decision": "act",
+   "action": "alert",
+   "scope_kind": "ip",
+   "scope_value": "203.0.113.63",
+   "mode": "alert",
+   "status": "applied"
+  }
+ ]
+}
