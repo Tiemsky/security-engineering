@@ -1,8 +1,8 @@
-# Validation report — v0.1.0 (in progress: phases A and B done)
+# Validation report — v0.1.0 (in progress: phases A, B and C done)
 Status legend: **PASS** (executed, evidence kept) · **FAIL** · **NOT VERIFIED** · tests labelled *real session* ran in the actual tool.
 
 ## 1. Baseline (Phase A, no file modified)
-- Commit `a1161e9`, VERSION 0.1.0, tree clean, no `v0.1.0` tag. 47 tests green from a fresh `git clone` (Docker images were cached → image rebuild not proven).
+- Commit `a1161e9` (rewritten to `30e97c7` when the Co-Authored-By trailers were removed; content identical), VERSION 0.1.0, tree clean, no `v0.1.0` tag. 47 tests green from a fresh `git clone` (Docker images were cached → image rebuild not proven).
 - Implicit dependencies: Docker + network for integration/PowerShell tests; PyYAML on host; floating image tags (`php:8.4`, `node:24`, `laravel ^12`, `powershell:latest`).
 - Gaps vs. the Phase-2 brief: the runtime has **no Redis store and no worker/queue** (state is in-process), so "Redis/worker unavailable" is only simulable through the `storeFailure` hook; rollback, malformed events and partial-failure cases were untested.
 
@@ -27,8 +27,29 @@ Tool-set statements for OpenCode/Antigravity come partly from the model's self-r
 - **L4** Antigravity gives agents no per-agent confirmation setting; with `always-proceed` the implementer writes unprompted. "Confirm before write" is therefore **not enforced by the adapter** on Antigravity.
 - agy auto-updated 1.3.4 → 1.4.0 during the validation; results are tied to the versions above.
 
-## 5. Not yet done (phases C–F)
-Installer upgrade/rollback matrix extensions, native Windows `install.ps1`, engine rollback/partial-failure/malformed-event tests, extended Laravel/NestJS differential scenarios, `account_lock`/`session_revocation` status, release recommendation.
+## 5. Installation / uninstall matrix (Phase C) — executed in temp dirs, real HOME untouched
+| Case | Result |
+|---|---|
+| first install (global, project, project+vendored skills) · second install = 0 actions · dry-run (install and uninstall) writes nothing | PASS |
+| conflict with user file → exit 3, content kept; `--force` → `.bak.<UTC>` backup; `uninstall --restore-backups` restores | PASS |
+| upgrade 0.0.9→0.1.0: unmodified managed files updated, manifest version moved, validate OK; user-edited file kept + conflict | PASS |
+| downgrade (global) and pin mismatch (project) refused, exit 4; `--allow-version-change` moves the pin | PASS |
+| uninstall removes only unmodified managed files, keeps edited ones (`KEEP`), twice-safe, global/project manifests independent | PASS |
+| foreign skill dir of the same name → conflict, user file intact | PASS |
+| permission files (`settings.json`, Antigravity `config.json`) byte-identical after install | PASS |
+| paths containing spaces/parentheses (HOME and project) | PASS after fix D3 |
+| `install.ps1` + new `uninstall.ps1` on PowerShell 7.4/Linux (Docker): idempotent, preserve JSON/Markdown, uninstall restores original state | PASS |
+| native Windows (5.1/7), ACLs, CRLF, locked files, OneDrive profile | **NOT EXECUTED** — protocol in `docs/windows-validation-protocol.md` |
+
+### Defects found in Phase C (fixed, regression-tested)
+- **D1** uninstall deleted a user's pre-existing file that merely had identical content (installer recorded it as owned). Now *adopted* and left unmanaged.
+- **D2** uninstall left `$schema` added to a user's `opencode.json`, and left installer-created empty `CLAUDE.md`/`AGENTS.md`/`opencode.json`. The manifest now records `created` and `json_schema_added`.
+- **D3** paths with spaces broke the manifest, validation and uninstall (word-splitting). Lists are now newline/tab-delimited.
+- **D4** directory pruning (`rmdir -p`; same logic in the first PowerShell draft) could climb above the install location. Pruning now stops at tool roots.
+- **D5** Windows had no uninstaller: `scripts/uninstall.ps1` added.
+
+## 5b. Not yet done (phases D–F)
+Engine rollback/partial-failure/malformed-event tests, extended Laravel/NestJS differential scenarios, `account_lock`/`session_revocation` status, release recommendation.
 
 ## 6. Reproduce
 `tests/run_all.sh` (47→48 tests) · `tests/smoke/opencode.sh <dir> [--with-model <m>]` (Docker) · `tests/smoke/claude.sh <dir>` · `tests/smoke/antigravity.sh <dir>` (real sessions, consume quota).

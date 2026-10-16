@@ -14,7 +14,7 @@ $Src = Split-Path -Parent $PSScriptRoot
 $Version = (Get-Content (Join-Path $Src 'VERSION') -Raw).Trim()
 $Ts = (Get-Date).ToUniversalTime().ToString('yyyyMMddTHHmmssZ')
 $HomeDir = if ($env:USERPROFILE) { $env:USERPROFILE } else { $HOME }
-$Conflicts = 0; $Actions = 0; $NewFiles = @{}; $Backups = @{}; $Blocks = @()
+$Conflicts = 0; $Actions = 0; $NewFiles = @{}; $Backups = @{}; $Blocks = @(); $Created = @(); $SchemaAdded = @()
 function Say($m) { Write-Host $m }
 function Act($m) { $script:Actions++; Say ("  " + $(if ($DryRun) { '[dry-run] ' } else { '' }) + $m) }
 function Sha($p) { (Get-FileHash -Algorithm SHA256 -LiteralPath $p).Hash.ToLower() }
@@ -53,6 +53,8 @@ if (Test-Path $Manifest) {
   $m.files.PSObject.Properties | ForEach-Object { $Old[$_.Name] = $_.Value }
   if ($m.backups) { $m.backups.PSObject.Properties | ForEach-Object { $Backups[$_.Name] = $_.Value } }
   if ($m.blocks) { $Blocks = @($m.blocks) }
+  if ($m.created) { $Created = @($m.created) }
+  if ($m.json_schema_added) { $SchemaAdded = @($m.json_schema_added) }
   if ($PrevVersion -and ([version]$PrevVersion -gt [version]$Version) -and -not $AllowVersionChange) { Say "REFUSED: installed $PrevVersion is newer than source $Version (downgrade). Use -AllowVersionChange."; exit 4 }
 }
 $Pcfg = Join-Path $RootState 'config.yaml'
@@ -65,7 +67,7 @@ function Install-File($s, $d) {
   $ss = Sha $s
   if (-not (Test-Path -LiteralPath $d)) { Act "copy  $d"; if (-not $DryRun) { New-Item -ItemType Directory -Force (Split-Path $d) | Out-Null; Copy-Item -LiteralPath $s -Destination $d }; $script:NewFiles[$d] = $ss; return }
   $ds = Sha $d
-  if ($ds -eq $ss) { $script:NewFiles[$d] = $ss; return }
+  if ($ds -eq $ss) { if ($Old.ContainsKey($d)) { $script:NewFiles[$d] = $ss } else { Say "  adopted (pre-existing, identical, left unmanaged): $d" }; return }
   if ($Old.ContainsKey($d) -and $Old[$d] -eq $ds) { Act "update $d"; if (-not $DryRun) { Copy-Item -LiteralPath $s -Destination $d -Force }; $script:NewFiles[$d] = $ss; return }
   if ($Force) { Act "backup+overwrite $d (-> $d.bak.$Ts)"; if (-not $DryRun) { Copy-Item -LiteralPath $d -Destination "$d.bak.$Ts"; Copy-Item -LiteralPath $s -Destination $d -Force }; $script:NewFiles[$d] = $ss; $script:Backups[$d] = "$d.bak.$Ts"; return }
   Say "CONFLICT $d exists and is not managed/unmodified by this installer (use -Force to back up and overwrite)"; $script:Conflicts++
@@ -93,7 +95,7 @@ function Sub-Template($p) { (Get-Content $p -Raw).Replace('{{VERSION}}', $Versio
 function Set-ManagedBlock($file, $tpl) {
   $b = '<!-- security-engineering:begin -->'; $e = '<!-- security-engineering:end -->'
   $block = "$b`n$((Sub-Template $tpl).TrimEnd())`n$e"
-  $exists = Test-Path $file; $cur = if ($exists) { Get-Content $file -Raw } else { '' }
+  $exists = Test-Path $file; if (-not $exists -and ($script:Created -notcontains $file)) { $script:Created += $file }; $cur = if ($exists) { Get-Content $file -Raw } else { '' }
   if ($cur.Contains($b)) {
     $new = [regex]::Replace($cur, "(?s)$([regex]::Escape($b)).*?$([regex]::Escape($e))", { param($mm) $block })
     if ($new -eq $cur) { return }
@@ -116,9 +118,10 @@ if ($Mode -eq 'project') {
   if ((Has 'opencode') -or (Has 'antigravity')) { Set-ManagedBlock (Join-Path $ProjectDir 'AGENTS.md') (Join-Path $Src 'adapters/opencode/AGENTS.md.template') }
   if (Has 'opencode') {
     $oc = Join-Path $ProjectDir 'opencode.json'
-    if (-not (Test-Path $oc)) { Act "create $oc"; if (-not $DryRun) { Copy-Item (Join-Path $Src 'adapters/opencode/opencode.json.template') $oc } }
+    if (-not (Test-Path $oc)) { Act "create $oc"; if ($script:Created -notcontains $oc) { $script:Created += $oc }; if (-not $DryRun) { Copy-Item (Join-Path $Src 'adapters/opencode/opencode.json.template') $oc } }
     elseif (-not ((Select-String -Path $oc -Pattern 'security-engineering/PROJECT_RULES.md' -SimpleMatch -Quiet) -and (Select-String -Path $oc -Pattern '"$schema"' -SimpleMatch -Quiet))) {
       Act "merge instructions entry into $oc (other keys preserved; backup kept)"
+      if (-not (Select-String -Path $oc -Pattern '"$schema"' -SimpleMatch -Quiet) -and ($script:SchemaAdded -notcontains $oc)) { $script:SchemaAdded += $oc }
       if (-not $DryRun) {
         Copy-Item $oc "$oc.bak.$Ts"; $j = Get-Content $oc -Raw | ConvertFrom-Json; $entry = '.security-engineering/PROJECT_RULES.md'
         if (-not $j.PSObject.Properties['instructions']) { $j | Add-Member -NotePropertyName instructions -NotePropertyValue @($entry) }
@@ -132,7 +135,7 @@ if ($Mode -eq 'project') {
 if (-not $DryRun) {
   New-Item -ItemType Directory -Force $RootState | Out-Null
   $files = [ordered]@{}; foreach ($k in $Old.Keys) { $files[$k] = $Old[$k] }; foreach ($k in $NewFiles.Keys) { $files[$k] = $NewFiles[$k] }
-  Utf8NoBom $Manifest ([ordered]@{ version = $Version; mode = $Mode; installed_at = $Ts; files = $files; blocks = @($Blocks); backups = $Backups } | ConvertTo-Json -Depth 8)
+  Utf8NoBom $Manifest ([ordered]@{ version = $Version; mode = $Mode; installed_at = $Ts; files = $files; blocks = @($Blocks); backups = $Backups; created = @($Created); json_schema_added = @($SchemaAdded) } | ConvertTo-Json -Depth 8)
   Say "manifest: $Manifest"
 }
 Say "done: $Actions action(s), $Conflicts conflict(s)$(if ($DryRun) { ' (dry-run: nothing written)' })"

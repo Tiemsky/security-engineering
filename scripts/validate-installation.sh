@@ -24,7 +24,7 @@ if [ "$MODE" = project ]; then
   c="$ROOT_STATE/config.yaml"; [ -f "$c" ] || bad "missing $c"
   pin="$(sed -n 's/^security_engineering_version:[[:space:]]*"\{0,1\}\([0-9][0-9.]*\)"\{0,1\}.*/\1/p' "$c" 2>/dev/null | head -1)"
   [ "$pin" = "$ver" ] || bad "pin '$pin' != installed version '$ver'"
-  for b in $(python3 -c 'import json,sys;print(" ".join(json.load(open(sys.argv[1])).get("blocks",[])))' "$MANIFEST"); do grep -qF "security-engineering:begin" "$b" || bad "managed block missing in $b"; done
+  while IFS= read -r b; do [ -n "$b" ] && { grep -qF "security-engineering:begin" "$b" || bad "managed block missing in $b"; }; done < <(python3 -c 'import json,sys;print("\n".join(json.load(open(sys.argv[1])).get("blocks",[])))' "$MANIFEST")
 fi
 echo "checked $CHECKED file(s), version $ver, static verification only (no tool was launched)"
 [ $FAIL -eq 0 ] && echo "OK" || { echo "$FAIL failure(s)"; exit 1; }

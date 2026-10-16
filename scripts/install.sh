@@ -68,9 +68,10 @@ install_file() {
   local s="$1" d="$2" ss; ss="$(sha "$s")"
   if [ ! -e "$d" ]; then act "copy  $d"; [ $DRY = 1 ] || { mkdir -p "$(dirname "$d")"; cp "$s" "$d"; }; record "$d" "$ss"; return; fi
   local ds os; ds="$(sha "$d")"; os="$(old_sha "$d")"
-  if [ "$ds" = "$ss" ]; then record "$d" "$ss"; return; fi                       # already current (idempotent)
+  if [ "$ds" = "$ss" ]; then   # already current (idempotent). Record ownership ONLY if a previous install created it; a pre-existing identical file stays the user's.
+    if [ -n "$os" ]; then record "$d" "$ss"; else say "  adopted (pre-existing, identical, left unmanaged): $d"; fi; return; fi
   if [ -n "$os" ] && [ "$os" = "$ds" ]; then act "update $d"; [ $DRY = 1 ] || cp "$s" "$d"; record "$d" "$ss"; return; fi   # ours, unmodified → upgrade
-  if [ $FORCE = 1 ]; then act "backup+overwrite $d (-> $d.bak.$TS)"; [ $DRY = 1 ] || { cp "$d" "$d.bak.$TS"; cp "$s" "$d"; }; record "$d" "$ss"; BACKUPS+=("$d=$d.bak.$TS"); return; fi
+  if [ $FORCE = 1 ]; then act "backup+overwrite $d (-> $d.bak.$TS)"; [ $DRY = 1 ] || { cp "$d" "$d.bak.$TS"; cp "$s" "$d"; }; record "$d" "$ss"; BACKUPS+=("$d"$'\t'"$d.bak.$TS"); return; fi
   say "CONFLICT $d exists and is not managed/unmodified by this installer (use --force to back up and overwrite)"; CONFLICTS=$((CONFLICTS+1))
 }
 act() { ACTIONS=$((ACTIONS+1)); say "  $([ $DRY = 1 ] && echo '[dry-run] ')$*"; }
@@ -133,11 +134,11 @@ managed_block() {  # managed_block FILE TEMPLATE : insert/replace our marked blo
     if cmp -s "$new" "$f"; then rm -f "$new" "$tmp"; return; fi
     act "update managed block in $f"; [ $DRY = 1 ] || { cp "$f" "$f.bak.$TS"; cp "$new" "$f"; }; rm -f "$new"
   else
-    act "append managed block to $f"; [ $DRY = 1 ] || { [ -f "$f" ] && cp "$f" "$f.bak.$TS"; { [ -f "$f" ] && cat "$f" && echo; cat "$tmp"; } > "$f.new"; mv "$f.new" "$f"; }
+    act "append managed block to $f"; [ -f "$f" ] || CREATED+=("$f"); [ $DRY = 1 ] || { [ -f "$f" ] && cp "$f" "$f.bak.$TS"; { [ -f "$f" ] && cat "$f" && echo; cat "$tmp"; } > "$f.new"; mv "$f.new" "$f"; }
   fi
   rm -f "$tmp"; BLOCKS+=("$f")
 }
-BLOCKS=()
+BLOCKS=(); CREATED=(); SCHEMA_ADDED=""
 if [ "$MODE" = project ]; then
   if [ -z "$FRAMEWORK" ]; then
     if grep -q '"laravel/framework"' "$PROJECT_DIR/composer.json" 2>/dev/null; then FRAMEWORK=laravel
@@ -151,9 +152,9 @@ if [ "$MODE" = project ]; then
   { has opencode || has antigravity; } && managed_block "$PROJECT_DIR/AGENTS.md" "$SRC/adapters/opencode/AGENTS.md.template"
   if has opencode; then   # merge, never replace, opencode.json
     OC="$PROJECT_DIR/opencode.json"
-    if [ ! -f "$OC" ]; then act "create $OC"; [ $DRY = 1 ] || cp "$SRC/adapters/opencode/opencode.json.template" "$OC"
+    if [ ! -f "$OC" ]; then act "create $OC"; CREATED+=("$OC"); [ $DRY = 1 ] || cp "$SRC/adapters/opencode/opencode.json.template" "$OC"
     elif python3 -c 'import json,sys;d=json.load(open(sys.argv[1]));sys.exit(0 if ".security-engineering/PROJECT_RULES.md" in d.get("instructions",[]) and "$schema" in d else 1)' "$OC"; then :   # already merged
-    else act "merge instructions entry into $OC (other keys preserved; backup kept)"; [ $DRY = 1 ] || { cp "$OC" "$OC.bak.$TS"; python3 - "$OC" <<'PY'
+    else act "merge instructions entry into $OC (other keys preserved; backup kept)"; grep -q '"\$schema"' "$OC" || SCHEMA_ADDED="$OC"; [ $DRY = 1 ] || { cp "$OC" "$OC.bak.$TS"; python3 - "$OC" <<'PY'
 import json,sys
 p=sys.argv[1]; d=json.load(open(p)); e=".security-engineering/PROJECT_RULES.md"
 ins=d.setdefault("instructions",[]); 
@@ -168,13 +169,16 @@ fi
 # ---- manifest -------------------------------------------------------------------------------
 if [ $DRY = 0 ]; then
   mkdir -p "$ROOT_STATE"
-  python3 - "$MANIFEST" "$VERSION" "$NEWMAN" "$TS" "${BLOCKS[*]:-}" "${BACKUPS[*]:-}" "$MODE" <<'PY'
+  nl() { [ $# -eq 0 ] || printf '%s\n' "$@"; }
+  python3 - "$MANIFEST" "$VERSION" "$NEWMAN" "$TS" "$(nl "${BLOCKS[@]+"${BLOCKS[@]}"}")" "$(nl "${BACKUPS[@]+"${BACKUPS[@]}"}")" "$MODE" "$(nl "${CREATED[@]+"${CREATED[@]}"}")" "$SCHEMA_ADDED" <<'PY'
 import json,sys,os
-mp,ver,newf,ts,blocks,backups,mode=sys.argv[1:8]
+mp,ver,newf,ts,blocks,backups,mode,created,schema_added=sys.argv[1:10]
+L=lambda x:[i for i in x.split("\n") if i]
 old=json.load(open(mp)) if os.path.exists(mp) else {}
 files=dict(l.rstrip("\n").split("\t") for l in open(newf) if "\t" in l)
-bk=old.get("backups",{}); bk.update(dict(b.split("=",1) for b in backups.split() if "=" in b))
-new={"version":ver,"mode":mode,"installed_at":ts,"files":{**old.get("files",{}),**files},"blocks":sorted(set(old.get("blocks",[])+blocks.split())),"backups":bk}
+bk=old.get("backups",{}); bk.update(dict(b.split("\t",1) for b in L(backups) if "\t" in b))
+new={"version":ver,"mode":mode,"installed_at":ts,"files":{**old.get("files",{}),**files},"blocks":sorted(set(old.get("blocks",[])+L(blocks))),"backups":bk,"created":sorted(set(old.get("created",[])+L(created))),"json_schema_added":old.get("json_schema_added",[])}
+if schema_added: new["json_schema_added"]=sorted(set(new["json_schema_added"]+[schema_added]))
 if old and {k:v for k,v in old.items() if k!="installed_at"}=={k:v for k,v in new.items() if k!="installed_at"}: sys.exit(0)   # unchanged -> idempotent
 json.dump(new,open(mp,"w"),indent=2)
 PY

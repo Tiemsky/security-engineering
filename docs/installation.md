@@ -8,6 +8,7 @@ scripts/install.sh --mode global                    # auto-detects claude / open
 scripts/install.sh --mode global --tools claude --claude-dir /custom/.claude
 scripts/validate-installation.sh --mode global
 scripts/uninstall.sh --mode global [--restore-backups]
+# Windows: scripts/install.ps1 -Mode global -DryRun ; scripts/uninstall.ps1 -Mode global
 ```
 Targets: Claude `~/.claude/{skills,agents}`; OpenCode `$XDG_CONFIG_HOME|~/.config/opencode/{skills,agents}`; Antigravity `~/.gemini/config/{skills,agents,rules}`; shared `~/.security-engineering/shared/{core,contracts,policies}`; manifest `~/.security-engineering/manifest-global.json`.
 WSL: installs into the Linux home; Windows-side configs are never touched unless you pass an explicit `--*-dir`.
@@ -18,6 +19,7 @@ WSL: installs into the Linux home; Windows-side configs are never touched unless
 - Unrelated JSON/Markdown is preserved: `opencode.json` is merged key-wise; `CLAUDE.md`/`AGENTS.md` get only a marked `<!-- security-engineering:begin/end -->` block.
 - Version checks: downgrade or pin mismatch ⇒ exit 4 unless `--allow-version-change`.
 - Permission allowlists, `permissionMode`, shell policies are never modified. No secrets are read or copied.
+- Ownership: a pre-existing file that is already identical to ours is *adopted* (left unmanaged) — uninstall never removes it. Files the installer *created* (e.g. an empty `AGENTS.md`/`opencode.json` that only held our block) are removed on uninstall; a `$schema` key we added to your `opencode.json` is removed again. Directory pruning stops at tool roots (`.claude`, `.opencode`, `.agents`, …).
 - Duplicate skill names found under another discovery root are reported as warnings.
 
 ## Update / rollback

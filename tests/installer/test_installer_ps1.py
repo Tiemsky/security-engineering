@@ -23,3 +23,16 @@ class PowerShellInstaller(unittest.TestCase):
             self.assertEqual(json.loads((proj / "opencode.json").read_text())["keep"], "me"); self.assertTrue((proj / "AGENTS.md").read_text().startswith("# mine"))
             r = run(tmp, base + " | Select-Object -Last 1"); self.assertIn("0 action(s)", r.stdout, r.stdout + r.stderr)
         finally: shutil.rmtree(tmp, ignore_errors=True)
+
+    def test_uninstall_restores_original_state_and_keeps_user_files(self):
+        tmp = pathlib.Path(tempfile.mkdtemp(prefix="se-ps-")); (tmp / "home").mkdir(); proj = tmp / "my proj"; proj.mkdir()
+        (proj / "opencode.json").write_text('{"keep":"me"}'); (proj / "CLAUDE.md").write_text("# mine\n")
+        pre = proj / ".claude/agents"; pre.mkdir(parents=True); shutil.copy(ROOT / "adapters/claude-code/agents/security-auditor.md", pre / "security-auditor.md")
+        try:
+            args = "-Mode project -ProjectDir '/t/my proj' -Tools claude,opencode"
+            run(tmp, f"/repo/scripts/install.ps1 {args} | Out-Null")
+            r = run(tmp, f"/repo/scripts/uninstall.ps1 -Mode project -ProjectDir '/t/my proj' | Select-Object -Last 1"); self.assertIn("done:", r.stdout, r.stdout + r.stderr)
+            self.assertEqual(json.loads((proj / "opencode.json").read_text()), {"keep": "me"}); self.assertEqual((proj / "CLAUDE.md").read_text().strip(), "# mine")
+            self.assertTrue((pre / "security-auditor.md").exists(), "pre-existing identical file must survive"); self.assertFalse((proj / ".claude/agents/security-reviewer.md").exists())
+            self.assertFalse((proj / ".security-engineering/manifest-project.json").exists())
+        finally: shutil.rmtree(tmp, ignore_errors=True)
