@@ -1,0 +1,44 @@
+{
+ "description": "A honeypot hit from an IP with \u226520 distinct legitimate accounts (carrier NAT) is NEVER auto-blocked: manual_review",
+ "config": {
+  "mode": "enforce"
+ },
+ "steps": [
+  {
+   "t": 0,
+   "op": "burst",
+   "n": 20,
+   "per_second": 1,
+   "event": {
+    "kind": "login_success",
+    "ip": "198.51.100.200",
+    "account": "legit{i}"
+   }
+  },
+  {
+   "t": 30,
+   "ip": "198.51.100.200",
+   "method": "GET",
+   "path": "/wp-admin.php",
+   "expect_status": 404
+  },
+  {
+   "t": 31,
+   "ip": "198.51.100.200",
+   "method": "GET",
+   "path": "/health",
+   "expect_status": 200
+  }
+ ],
+ "expect_events": [
+  {
+   "rule_id": "trap.honeypot-hit",
+   "decision": "manual_review",
+   "action": "manual_review",
+   "scope_kind": "ip",
+   "scope_value": "198.51.100.200",
+   "mode": "enforce",
+   "status": "pending_approval"
+  }
+ ]
+}

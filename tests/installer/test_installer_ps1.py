@@ -8,7 +8,7 @@ DOCKER = not os.environ.get("SE_SKIP_DOCKER") and shutil.which("docker") and sub
 
 def run(tmp, script):
     if PWSH: cmd = [PWSH, "-NoProfile", "-c", script.replace("/repo", str(ROOT)).replace("/t", str(tmp))]; env = {**os.environ, "HOME": f"{tmp}/home"}
-    else: cmd = ["docker", "run", "--rm", "-v", f"{ROOT}:/repo:ro", "-v", f"{tmp}:/t", "-e", "HOME=/t/home", "mcr.microsoft.com/powershell:latest", "pwsh", "-NoProfile", "-c", script]; env = None
+    else: cmd = ["docker", "run", "--rm", "-v", f"{ROOT}:/repo:ro", "-v", f"{tmp}:/t", "-e", "HOME=/t/home", "mcr.microsoft.com/powershell:7.4-ubuntu-22.04", "pwsh", "-NoProfile", "-c", script]; env = None
     return subprocess.run(cmd, capture_output=True, text=True, env=env)
 
 @unittest.skipUnless(PWSH or DOCKER, "neither pwsh nor docker available: install.ps1 NOT executed")

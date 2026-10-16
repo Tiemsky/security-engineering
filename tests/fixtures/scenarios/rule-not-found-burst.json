@@ -1,0 +1,50 @@
+{
+ "description": "scan.not-found-burst: 60 404s on 60 paths alerts; 59 does not; 60 on a single path (min_distinct 30) does not",
+ "config": {},
+ "steps": [
+  {
+   "t": 0,
+   "op": "burst",
+   "n": 60,
+   "per_second": 1,
+   "event": {
+    "kind": "not_found",
+    "ip": "203.0.113.81",
+    "path": "/p{i}"
+   }
+  },
+  {
+   "t": 10,
+   "op": "burst",
+   "n": 59,
+   "per_second": 1,
+   "event": {
+    "kind": "not_found",
+    "ip": "203.0.113.82",
+    "path": "/p{i}"
+   }
+  },
+  {
+   "t": 20,
+   "op": "burst",
+   "n": 60,
+   "per_second": 1,
+   "event": {
+    "kind": "not_found",
+    "ip": "203.0.113.83",
+    "path": "/same"
+   }
+  }
+ ],
+ "expect_events": [
+  {
+   "rule_id": "scan.not-found-burst",
+   "decision": "would_act",
+   "action": "alert",
+   "scope_kind": "ip",
+   "scope_value": "203.0.113.81",
+   "mode": "observe",
+   "status": "skipped_observe_only"
+  }
+ ]
+}

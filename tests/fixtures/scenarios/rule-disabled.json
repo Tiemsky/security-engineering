@@ -1,0 +1,35 @@
+{
+ "description": "enabled:false rules never fire",
+ "config": {
+  "extra_rules": [
+   {
+    "id": "x.disabled",
+    "version": "1.0.0",
+    "description": "test",
+    "signal": "request_rate_per_key",
+    "group_by": "ip",
+    "window_seconds": 60,
+    "threshold": 1,
+    "evidence_required": [
+     "x"
+    ],
+    "mode": "observe",
+    "action": "rate_limit",
+    "enabled": false
+   }
+  ]
+ },
+ "steps": [
+  {
+   "t": 0,
+   "op": "burst",
+   "n": 5,
+   "per_second": 1,
+   "event": {
+    "kind": "request",
+    "ip": "203.0.113.91"
+   }
+  }
+ ],
+ "expect_events": []
+}

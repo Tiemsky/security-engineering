@@ -1,0 +1,57 @@
+{
+ "description": "otp.verify-bruteforce: 5 wrong OTPs for one identifier trigger; 4 do not; identifiers are independent",
+ "config": {},
+ "steps": [
+  {
+   "t": 0,
+   "op": "burst",
+   "n": 5,
+   "per_second": 1,
+   "event": {
+    "kind": "otp_failed",
+    "account": "idA"
+   }
+  },
+  {
+   "t": 10,
+   "op": "burst",
+   "n": 4,
+   "per_second": 1,
+   "event": {
+    "kind": "otp_failed",
+    "account": "idB"
+   }
+  },
+  {
+   "t": 20,
+   "op": "burst",
+   "n": 3,
+   "per_second": 1,
+   "event": {
+    "kind": "otp_failed",
+    "account": "idC"
+   }
+  },
+  {
+   "t": 21,
+   "op": "burst",
+   "n": 2,
+   "per_second": 1,
+   "event": {
+    "kind": "otp_failed",
+    "account": "idD"
+   }
+  }
+ ],
+ "expect_events": [
+  {
+   "rule_id": "otp.verify-bruteforce",
+   "decision": "would_act",
+   "action": "rate_limit",
+   "scope_kind": "account",
+   "scope_value": "idA",
+   "mode": "observe",
+   "status": "skipped_observe_only"
+  }
+ ]
+}

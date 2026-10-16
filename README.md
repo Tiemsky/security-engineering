@@ -39,4 +39,4 @@ Orchestrator → Architect (audit + threat model + plan) → **you approve** →
 tests/run_all.sh              # needs python3 + PyYAML (+ Docker for the real Laravel/NestJS integration run)
 SE_SKIP_DOCKER=1 tests/run_all.sh
 ```
-See `docs/status.md` for what is implemented, tested and unverified.
+See `docs/status.md` (implemented / tested / unverified) and `docs/validation-v0.1.0.md` (validation report and release decision).

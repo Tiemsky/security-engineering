@@ -1,0 +1,59 @@
+{
+ "description": "enum.sequential-ids: 40 denied distinct object ids on one token alerts; 39 does not; 60 hits on ONE id still triggers (rule has no min_distinct)",
+ "config": {},
+ "steps": [
+  {
+   "t": 0,
+   "op": "burst",
+   "n": 40,
+   "per_second": 1,
+   "event": {
+    "kind": "id_deny",
+    "token": "tokA",
+    "object_id": "{i}"
+   }
+  },
+  {
+   "t": 10,
+   "op": "burst",
+   "n": 39,
+   "per_second": 1,
+   "event": {
+    "kind": "id_deny",
+    "token": "tokB",
+    "object_id": "{i}"
+   }
+  },
+  {
+   "t": 20,
+   "op": "burst",
+   "n": 40,
+   "per_second": 1,
+   "event": {
+    "kind": "id_deny",
+    "token": "tokC",
+    "object_id": "same"
+   }
+  }
+ ],
+ "expect_events": [
+  {
+   "rule_id": "enum.sequential-ids",
+   "decision": "would_act",
+   "action": "alert",
+   "scope_kind": "token",
+   "scope_value": "tokA",
+   "mode": "observe",
+   "status": "skipped_observe_only"
+  },
+  {
+   "rule_id": "enum.sequential-ids",
+   "decision": "would_act",
+   "action": "alert",
+   "scope_kind": "token",
+   "scope_value": "tokC",
+   "mode": "observe",
+   "status": "skipped_observe_only"
+  }
+ ]
+}

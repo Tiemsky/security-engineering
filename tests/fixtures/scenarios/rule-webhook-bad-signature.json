@@ -1,0 +1,37 @@
+{
+ "description": "webhook.bad-signature: 10 invalid signatures from a source alerts; 9 does not",
+ "config": {},
+ "steps": [
+  {
+   "t": 0,
+   "op": "burst",
+   "n": 10,
+   "per_second": 1,
+   "event": {
+    "kind": "signature_failed",
+    "ip": "203.0.113.87"
+   }
+  },
+  {
+   "t": 10,
+   "op": "burst",
+   "n": 9,
+   "per_second": 1,
+   "event": {
+    "kind": "signature_failed",
+    "ip": "203.0.113.88"
+   }
+  }
+ ],
+ "expect_events": [
+  {
+   "rule_id": "webhook.bad-signature",
+   "decision": "would_act",
+   "action": "alert",
+   "scope_kind": "ip",
+   "scope_value": "203.0.113.87",
+   "mode": "observe",
+   "status": "skipped_observe_only"
+  }
+ ]
+}

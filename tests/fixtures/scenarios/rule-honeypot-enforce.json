@@ -1,0 +1,54 @@
+{
+ "description": "enforce: honeypot hit blocks that IP only (others unaffected) until TTL, then traffic recovers",
+ "config": {
+  "mode": "enforce"
+ },
+ "steps": [
+  {
+   "t": 0,
+   "ip": "203.0.113.85",
+   "method": "GET",
+   "path": "/wp-admin.php",
+   "expect_status": 404
+  },
+  {
+   "t": 1,
+   "ip": "203.0.113.85",
+   "method": "GET",
+   "path": "/health",
+   "expect_status": 429
+  },
+  {
+   "t": 1,
+   "ip": "203.0.113.86",
+   "method": "GET",
+   "path": "/health",
+   "expect_status": 200
+  },
+  {
+   "t": 900,
+   "ip": "203.0.113.85",
+   "method": "GET",
+   "path": "/health",
+   "expect_status": 200
+  },
+  {
+   "t": 900,
+   "op": "sweep"
+  }
+ ],
+ "expect_events": [
+  {
+   "rule_id": "trap.honeypot-hit",
+   "decision": "act",
+   "action": "temp_ip_block",
+   "scope_kind": "ip",
+   "scope_value": "203.0.113.85",
+   "mode": "enforce",
+   "status": "applied"
+  },
+  {
+   "outcome_only": "expired"
+  }
+ ]
+}

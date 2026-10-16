@@ -1,0 +1,50 @@
+{
+ "description": "authn.account-spray: 20 failures from 20 IPs triggers; 19/19 and 40-from-5-IPs (min_distinct 8) do not",
+ "config": {},
+ "steps": [
+  {
+   "t": 0,
+   "op": "burst",
+   "n": 20,
+   "per_second": 1,
+   "event": {
+    "kind": "login_failed",
+    "ip": "198.51.100.{i%20}",
+    "account": "acctA"
+   }
+  },
+  {
+   "t": 100,
+   "op": "burst",
+   "n": 19,
+   "per_second": 1,
+   "event": {
+    "kind": "login_failed",
+    "ip": "198.51.100.{i%19}",
+    "account": "acctB"
+   }
+  },
+  {
+   "t": 200,
+   "op": "burst",
+   "n": 40,
+   "per_second": 1,
+   "event": {
+    "kind": "login_failed",
+    "ip": "198.51.100.{i%5}",
+    "account": "acctC"
+   }
+  }
+ ],
+ "expect_events": [
+  {
+   "rule_id": "authn.account-spray",
+   "decision": "would_act",
+   "action": "manual_review",
+   "scope_kind": "account",
+   "scope_value": "acctA",
+   "mode": "observe",
+   "status": "skipped_observe_only"
+  }
+ ]
+}

@@ -1,4 +1,4 @@
-# Status — 2026-10-16 (v0.1.0)
+# Status — 2026-10-16 (v0.1.0 content, post-validation: 71 tests, 33 differential scenarios; see validation report)
 ## Implemented AND executed in tests (47 tests, all green)
 - 12 skills (frontmatter, 11 mandatory sections, references) · 5 agents → 15 generated native files, drift-checked · read-only/least-privilege boundaries asserted for all 3 tools.
 - 8 event schemas + detection-rule schema: own validator + real `jsonschema` 4.23 (python:3.12 container) — samples, IPv4/IPv6, UTC, extras rejected.

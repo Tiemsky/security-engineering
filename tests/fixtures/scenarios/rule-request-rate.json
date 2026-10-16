@@ -1,0 +1,55 @@
+{
+ "description": "request_rate_per_key (extra rule): 100 requests in 60 s trigger; 99 do not",
+ "config": {
+  "extra_rules": [
+   {
+    "id": "x.request-rate",
+    "version": "1.0.0",
+    "description": "test",
+    "signal": "request_rate_per_key",
+    "group_by": "ip",
+    "window_seconds": 60,
+    "threshold": 100,
+    "evidence_required": [
+     "x"
+    ],
+    "mode": "observe",
+    "action": "rate_limit",
+    "enabled": true
+   }
+  ]
+ },
+ "steps": [
+  {
+   "t": 0,
+   "op": "burst",
+   "n": 100,
+   "per_second": 10,
+   "event": {
+    "kind": "request",
+    "ip": "203.0.113.89"
+   }
+  },
+  {
+   "t": 100,
+   "op": "burst",
+   "n": 99,
+   "per_second": 10,
+   "event": {
+    "kind": "request",
+    "ip": "203.0.113.90"
+   }
+  }
+ ],
+ "expect_events": [
+  {
+   "rule_id": "x.request-rate",
+   "decision": "would_act",
+   "action": "rate_limit",
+   "scope_kind": "ip",
+   "scope_value": "203.0.113.89",
+   "mode": "observe",
+   "status": "skipped_observe_only"
+  }
+ ]
+}

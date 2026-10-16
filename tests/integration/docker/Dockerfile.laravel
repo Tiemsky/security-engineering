@@ -1,6 +1,8 @@
-# Real Laravel app used ONLY to execute the integration scenarios (never shipped).
-FROM php:8.4-cli-alpine
+# Real Laravel app used ONLY to execute the integration scenarios (never shipped). Versions pinned for reproducibility.
+FROM php:8.4.26-cli-alpine
 RUN apk add --no-cache git unzip python3 py3-yaml
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
-RUN composer create-project "laravel/laravel:^12.0" /app --no-interaction --prefer-dist -q
+COPY --from=composer:2.10.3 /usr/bin/composer /usr/bin/composer
+RUN composer create-project "laravel/laravel:^12.0" /app --no-interaction --prefer-dist --no-install --no-scripts -q \
+ && cd /app && sed -i 's#"laravel/framework": "[^"]*"#"laravel/framework": "12.70.0"#' composer.json \
+ && composer update --no-interaction --no-scripts -q && cp .env.example .env && php artisan key:generate -q
 WORKDIR /app

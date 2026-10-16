@@ -1,0 +1,31 @@
+{
+ "description": "trap.honeypot-hit in observe: would_act temp_ip_block, traffic not blocked",
+ "config": {},
+ "steps": [
+  {
+   "t": 0,
+   "ip": "203.0.113.84",
+   "method": "GET",
+   "path": "/wp-admin.php",
+   "expect_status": 404
+  },
+  {
+   "t": 1,
+   "ip": "203.0.113.84",
+   "method": "GET",
+   "path": "/health",
+   "expect_status": 200
+  }
+ ],
+ "expect_events": [
+  {
+   "rule_id": "trap.honeypot-hit",
+   "decision": "would_act",
+   "action": "temp_ip_block",
+   "scope_kind": "ip",
+   "scope_value": "203.0.113.84",
+   "mode": "observe",
+   "status": "skipped_observe_only"
+  }
+ ]
+}

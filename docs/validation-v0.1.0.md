@@ -1,4 +1,10 @@
-# Validation report — v0.1.0 (in progress: phases A–D done)
+# Validation report — v0.1.0 (phases A–F complete)
+
+## 0. Executive summary
+v0.1.0 as first delivered (`a1161e9`/`30e97c7`) was **not** safe to release: real sessions and adversarial tests exposed **16 defects** (plus one invalid test of my own) (OpenCode read-only auditor could `websearch`; Antigravity agents had a non-existent tool name and the orchestrator could not delegate; uninstall deleted a user's pre-existing file; paths with spaces broke the manifest; enforcement state collapsed for redacted identifiers; a failed action left an attack unmitigated; unbounded memory and log amplification; …). All are fixed with regression tests. The validated content differs from what was delivered (contract 1.1.0, hardened engine, new scripts), so it should **not** be tagged as the original `v0.1.0`.
+After fixes: **71 automated tests green from a fresh clone with all Docker images rebuilt from pinned versions** (PHP 8.4.26, Laravel 12.70.0, Node 24.21.0, NestJS 11.2.7, PowerShell 7.4), **33 differential scenarios × 2 frameworks identical**, real sessions in Claude Code 2.1.301, OpenCode 1.19.2 and Antigravity CLI 1.3.4/1.4.0.
+**Recommendation: do not block, do not enable enforcement; authorise a staging pilot in read-only/observe mode** (§9).
+
 Status legend: **PASS** (executed, evidence kept) · **FAIL** · **NOT VERIFIED** · tests labelled *real session* ran in the actual tool.
 
 ## 1. Baseline (Phase A, no file modified)
@@ -76,8 +82,58 @@ Laravel/NestJS divergences found and removed (not masked): IPv4-mapped IPv6 nota
 ### Limits that remain
 Single-process memory only (restart loses windows/blocks; multi-instance counters diverge); no real account-lock/session-revocation/challenge executor; the engine trusts the caller for opaque identifiers.
 
-## 5c. Not yet done (phases E–F)
-Extended differential scenarios beyond the 23 above (e.g. per-rule coverage of all 8 signals), final release recommendation, tag decision.
+## 5c. Differential coverage (Phase E)
+33 scenarios, each executed on real Laravel and real NestJS with identical inputs; outputs must be schema-valid, redaction-clean and equal after normalisation (rule, decision, action, scope, mode, outcome status). **Every shipped rule (7) and every engine signal (8) has a scenario with a triggering case and a just-below-threshold or unmet-`min_distinct` case** (`rule-*.json`, guarded by `tests/integration/test_scenario_coverage.py`). Enforce mode is exercised with scoped blocking (other IPs unaffected), TTL expiry and recovery, and a shared-NAT honeypot hit that must stay `manual_review`.
+Mutation checks (5 injected defects: redacted-scope keying, no retry after failure, executor without guard, threshold off-by-one, honeypot without shared-IP exception) each made the matching scenario fail.
+**Divergences between Laravel and NestJS: none remain.** Two were found and fixed in the TypeScript IP code (IPv4-mapped notation, zone ids). Legitimate differences by design: none identified; framework-specific parts (middleware vs interceptor/filter) produce the same events.
+Reproducibility: images and dependencies are now pinned (`tests/integration/docker/`), PowerShell test uses `7.4-ubuntu-22.04`.
 
 ## 6. Reproduce
-`tests/run_all.sh` (47→48 tests) · `tests/smoke/opencode.sh <dir> [--with-model <m>]` (Docker) · `tests/smoke/claude.sh <dir>` · `tests/smoke/antigravity.sh <dir>` (real sessions, consume quota).
+`tests/run_all.sh` (71 tests) · `tests/smoke/opencode.sh <dir> [--with-model <m>]` (Docker) · `tests/smoke/claude.sh <dir>` · `tests/smoke/antigravity.sh <dir>` (real sessions, consume quota).
+
+## 7. Vulnerabilities / defects discovered (all fixed unless noted)
+| # | Where | Defect | Severity |
+|---|---|---|---|
+| B1 | OpenCode adapter | read-only agents inherited implicit `"*": "allow"` → `websearch` (network egress) reachable | High |
+| B2 | Antigravity adapter | invalid tool name `edit_file` (can hang a subagent) | Medium |
+| B3 | Antigravity adapter | orchestrator lacked `invoke_subagent` → could not delegate | Medium |
+| C1 | uninstall | removed a user's pre-existing file that merely matched ours | **High** (data loss) |
+| C2 | uninstall | left `$schema`/created empty files behind | Low |
+| C3 | installer | paths with spaces broke manifest/validate/uninstall | Medium |
+| C4 | uninstall | `rmdir -p` could prune above the install location | Medium |
+| C5 | Windows | no uninstaller | Medium |
+| D6 | engine | enforcement keyed on redacted scope → unrelated identifiers shared one block | **High** |
+| D7 | engine | failed action consumed its idempotency key → attack unmitigated for the window | High |
+| D8 | engine | one duplicate event per repeated request (log amplification) | Medium |
+| D9 | engine | unbounded in-memory windows/keys | Medium (DoS) |
+| D10 | engine | sink exception propagated into the request | Medium |
+| D11 | engine | malformed signals unvalidated | Medium |
+| D12 | engine/contract | manual-review/allowlisted outcomes mislabelled | Low |
+| T1 | TS runtime | IPv4-mapped / zone-id handling differed from PHP | Medium |
+| A1 | tests | first OpenCode smoke test invalid (`--agent` on a subagent falls back to `build`) | process |
+Not defects but documented: Claude `security-reviewer` has `Bash` (read-only by instruction + approval, L1); Antigravity cannot enforce confirm-before-write (L4).
+
+## 8. Unresolved limitations
+1. Native Windows (PowerShell 5.1/7, ACLs, CRLF, locked files): **not executed** — protocol in `docs/windows-validation-protocol.md`. macOS not tested.
+2. Interactive confirmation prompts were not exercised in any tool (only non-interactive/headless behaviour); Antigravity gives no per-agent confirmation control (L4); Claude reviewer Bash (L1).
+3. Engine state is per-process memory: no Redis/worker; restart loses windows and active blocks; multi-instance counters diverge. No real account-lock, session-revocation or challenge executor (always `manual_review`).
+4. No pilot on a real Laravel project yet (pilots A/B/C not run).
+5. OpenCode/Antigravity tool lists partly rely on model self-report (corroborated by absence of write events); free third-party model used for OpenCode runs (fictional fixtures only).
+6. Tool CLIs auto-update (agy 1.3.4→1.4.0 during validation); results are version-bound.
+7. CI workflow has never run on a hosted runner; actions are not SHA-pinned.
+
+## 9. Release criteria and recommendation
+| Criterion | Status |
+|---|---|
+| Tests green from a clean state (fresh clone, rebuilt pinned images) | **MET** (71/71) |
+| Three tools load the agents/skills (real sessions) | **MET** (discovery + roles); interactive UI not exercised |
+| Permissions actually enforced | **MET with limitations** (L1, L4; headless only) |
+| Install / upgrade / uninstall validated, backups verified | **MET** on Linux & PowerShell 7/Linux; **NOT MET** on native Windows/macOS |
+| Rollback and failure scenarios, final state verified | **MET** for the in-memory engine; Redis/worker N/A |
+| Laravel pilot in observe mode | **NOT MET** (not run) |
+| Report with residual risks and justified decision | **MET** (this document) |
+5 of 7 met, 1 partial, 1 not met.
+**Decision: authorise a staging pilot in read-only / observe-only mode; keep enforcement blocked; do not publish a stable tag yet.**
+- Allowed now: pilot A (read-only audit of a test Laravel project) and pilot C (runtime wired in `observe`, test events only).
+- Blocked: any `enforce`/automatic blocking on real traffic, account lock / session revocation, global install on machines used for production work until the Windows/macOS protocol is run.
+- Before a stable tag: run the Windows protocol, run pilots A–C and record results here, decide on Redis-backed state if multi-instance, then tag. Because the validated content differs from the first delivery, tag it as **`v0.1.1`** (or a `-rc` of it) rather than `v0.1.0`; `VERSION` is still `0.1.0` pending that decision.
