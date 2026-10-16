@@ -6,7 +6,7 @@ tools:
   - grep_search
   - run_command
   - write_to_file
-  - edit_file
+  - replace_file_content
 model: inherit
 commandExecutionPolicy: sandbox
 mainAgent: false

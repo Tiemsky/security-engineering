@@ -1,0 +1,4 @@
+# OpenCode CLI used ONLY for adapter smoke tests (never shipped). Pinned version: results are only valid for this version.
+FROM node:24-bookworm-slim
+RUN apt-get update -qq && apt-get install -y -qq git python3 python3-yaml ca-certificates >/dev/null && rm -rf /var/lib/apt/lists/*
+RUN npm i -g --silent --no-audit --no-fund opencode-ai@1.19.2

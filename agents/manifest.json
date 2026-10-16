@@ -2,39 +2,215 @@
   "agents": {
     "security-architect": {
       "access": "read-only",
-      "skills": ["security-audit", "threat-modeling", "framework-adapter-development"],
-      "claude": {"tools": ["Read", "Grep", "Glob"], "model": "inherit"},
-      "opencode": {"mode": "subagent", "permission": {"edit": "deny", "bash": "deny", "webfetch": "deny"}},
-      "antigravity": {"tools": ["view_file", "grep_search"], "commandExecutionPolicy": "off", "mainAgent": false, "subagent": true}
+      "skills": [
+        "security-audit",
+        "threat-modeling",
+        "framework-adapter-development"
+      ],
+      "claude": {
+        "tools": [
+          "Read",
+          "Grep",
+          "Glob"
+        ],
+        "model": "inherit"
+      },
+      "opencode": {
+        "mode": "subagent",
+        "permission": {
+          "*": "deny",
+          "read": "allow",
+          "grep": "allow",
+          "glob": "allow",
+          "list": "allow",
+          "skill": "allow",
+          "edit": "deny",
+          "bash": "deny"
+        }
+      },
+      "antigravity": {
+        "tools": [
+          "view_file",
+          "grep_search"
+        ],
+        "commandExecutionPolicy": "off",
+        "mainAgent": false,
+        "subagent": true
+      }
     },
     "security-implementer": {
       "access": "write",
-      "skills": ["auth-hardening", "api-security", "rate-limiting", "request-observability", "bot-detection", "audit-trail", "devsecops"],
-      "claude": {"tools": ["Read", "Grep", "Glob", "Edit", "Write", "Bash"], "model": "inherit", "permissionMode": "default"},
-      "opencode": {"mode": "subagent", "permission": {"edit": "ask", "bash": {"*": "ask", "git status*": "allow", "git diff*": "allow"}, "webfetch": "deny"}},
-      "antigravity": {"tools": ["view_file", "grep_search", "run_command", "write_to_file", "edit_file"], "commandExecutionPolicy": "sandbox", "mainAgent": false, "subagent": true}
+      "skills": [
+        "auth-hardening",
+        "api-security",
+        "rate-limiting",
+        "request-observability",
+        "bot-detection",
+        "audit-trail",
+        "devsecops"
+      ],
+      "claude": {
+        "tools": [
+          "Read",
+          "Grep",
+          "Glob",
+          "Edit",
+          "Write",
+          "Bash"
+        ],
+        "model": "inherit",
+        "permissionMode": "default"
+      },
+      "opencode": {
+        "mode": "subagent",
+        "permission": {
+          "*": "deny",
+          "read": "allow",
+          "grep": "allow",
+          "glob": "allow",
+          "list": "allow",
+          "skill": "allow",
+          "edit": "ask",
+          "bash": {
+            "*": "ask",
+            "git status*": "allow",
+            "git diff*": "allow"
+          }
+        }
+      },
+      "antigravity": {
+        "tools": [
+          "view_file",
+          "grep_search",
+          "run_command",
+          "write_to_file",
+          "replace_file_content"
+        ],
+        "commandExecutionPolicy": "sandbox",
+        "mainAgent": false,
+        "subagent": true
+      }
     },
     "security-auditor": {
       "access": "read-only",
-      "skills": ["security-audit"],
-      "claude": {"tools": ["Read", "Grep", "Glob"], "model": "inherit"},
-      "opencode": {"mode": "subagent", "permission": {"edit": "deny", "bash": "deny", "webfetch": "deny"}},
-      "antigravity": {"tools": ["view_file", "grep_search"], "commandExecutionPolicy": "off", "mainAgent": false, "subagent": true}
+      "skills": [
+        "security-audit"
+      ],
+      "claude": {
+        "tools": [
+          "Read",
+          "Grep",
+          "Glob"
+        ],
+        "model": "inherit"
+      },
+      "opencode": {
+        "mode": "subagent",
+        "permission": {
+          "*": "deny",
+          "read": "allow",
+          "grep": "allow",
+          "glob": "allow",
+          "list": "allow",
+          "skill": "allow",
+          "edit": "deny",
+          "bash": "deny"
+        }
+      },
+      "antigravity": {
+        "tools": [
+          "view_file",
+          "grep_search"
+        ],
+        "commandExecutionPolicy": "off",
+        "mainAgent": false,
+        "subagent": true
+      }
     },
     "security-reviewer": {
       "access": "read-only",
-      "skills": ["security-validation"],
-      "claude": {"tools": ["Read", "Grep", "Glob", "Bash"], "model": "inherit", "permissionMode": "default"},
-      "opencode": {"mode": "subagent", "permission": {"edit": "deny", "bash": {"*": "ask", "git diff*": "allow", "git log*": "allow", "git status*": "allow"}, "webfetch": "deny"}},
-      "antigravity": {"tools": ["view_file", "grep_search", "run_command"], "commandExecutionPolicy": "sandbox", "mainAgent": false, "subagent": true}
+      "skills": [
+        "security-validation"
+      ],
+      "claude": {
+        "tools": [
+          "Read",
+          "Grep",
+          "Glob",
+          "Bash"
+        ],
+        "model": "inherit",
+        "permissionMode": "default"
+      },
+      "opencode": {
+        "mode": "subagent",
+        "permission": {
+          "*": "deny",
+          "read": "allow",
+          "grep": "allow",
+          "glob": "allow",
+          "list": "allow",
+          "skill": "allow",
+          "edit": "deny",
+          "bash": {
+            "*": "ask",
+            "git diff*": "allow",
+            "git log*": "allow",
+            "git status*": "allow"
+          }
+        }
+      },
+      "antigravity": {
+        "tools": [
+          "view_file",
+          "grep_search",
+          "run_command"
+        ],
+        "commandExecutionPolicy": "sandbox",
+        "mainAgent": false,
+        "subagent": true
+      }
     },
     "security-orchestrator": {
       "access": "read-only",
       "source": "orchestrator.md",
-      "skills": ["security-audit", "security-validation"],
-      "claude": {"tools": ["Read", "Grep", "Glob", "Agent"], "model": "inherit"},
-      "opencode": {"mode": "primary", "permission": {"edit": "deny", "bash": "deny", "task": "allow", "webfetch": "deny"}},
-      "antigravity": {"tools": ["view_file", "grep_search"], "commandExecutionPolicy": "off", "mainAgent": true, "subagent": false}
+      "skills": [
+        "security-audit",
+        "security-validation"
+      ],
+      "claude": {
+        "tools": [
+          "Read",
+          "Grep",
+          "Glob",
+          "Agent"
+        ],
+        "model": "inherit"
+      },
+      "opencode": {
+        "mode": "primary",
+        "permission": {
+          "*": "deny",
+          "read": "allow",
+          "grep": "allow",
+          "glob": "allow",
+          "list": "allow",
+          "skill": "allow",
+          "edit": "deny",
+          "bash": "deny",
+          "task": "allow"
+        }
+      },
+      "antigravity": {
+        "tools": [
+          "view_file",
+          "grep_search",
+          "invoke_subagent"
+        ],
+        "commandExecutionPolicy": "off",
+        "mainAgent": true,
+        "subagent": false
+      }
     }
   }
 }

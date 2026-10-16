@@ -4,6 +4,7 @@ description: "Coordinates the security workflow end to end: selects skills, sequ
 tools:
   - view_file
   - grep_search
+  - invoke_subagent
 model: inherit
 commandExecutionPolicy: off
 mainAgent: true

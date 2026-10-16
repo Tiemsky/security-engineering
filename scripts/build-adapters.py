@@ -34,7 +34,7 @@ def render(tool, name, meta, body, cfg):
     elif tool == "opencode":
         fm = [f"description: {q(meta['description'])}", f"mode: {t['mode']}", "permission:"]
         for k, v in t["permission"].items():
-            fm.append(f"  {k}:" + yaml_val(v, 1))
+            fm.append(f"  {q(k)}:" + yaml_val(v, 1))
     else:
         fm = [f"name: {name}", f"description: {q(meta['description'])}", "tools:"] + [f"  - {x}" for x in t["tools"]]
         fm += ["model: inherit", f"commandExecutionPolicy: {t['commandExecutionPolicy']}", f"mainAgent: {str(t['mainAgent']).lower()}",

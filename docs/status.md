@@ -8,8 +8,11 @@
 - Runtimes on **real Laravel 12.70 (PHP 8.4)** and **real NestJS 11.2 (Node 24)** in Docker: 9 shared scenarios × 2 frameworks — identical decisions, schema-valid events, no secret leakage, fail-open on store failure, expiry, XFF trust, IPv6 /64.
 ## Implemented, NOT exercised
 - `DecisionEngine::rollback()`/`rollback()` (code present, no scenario), account_lock/session_revocation executors (policy-level only; engine routes them to manual_review/approval), challenge action, queue-backed sinks, Laravel Policies / Nest Guards examples (guidance in skills only).
+## Validated in real tool sessions (2026-10-16, see docs/validation-v0.1.0.md)
+- Claude Code 2.1.301, OpenCode 1.19.2 (Docker), Antigravity CLI 1.3.4/1.4.0: agents + skills discovered; read-only boundaries held; defects found and fixed (OpenCode websearch, Antigravity tool names/delegation).
+- Limitations: Claude reviewer Bash, no write-confirmation on Antigravity under always-proceed.
 ## Unverified
-- Any of the three tools actually loading these agents/skills (no session launched). Antigravity subagent tool names for write tools; Antigravity rules path behaviour; OpenCode native-Windows path; `install.ps1` on native Windows PowerShell 5.1; macOS.
+- Antigravity rules file (`.agents/rules`) effect on behaviour; implementer confirmation prompts in interactive OpenCode/Claude/Antigravity; OpenCode native-Windows path; `install.ps1` on native Windows PowerShell 5.1; macOS.
 - Claude `--agent`-style use of the orchestrator.
 ## Next
 Promote rules one at a time from observe; add Policy/Guard reference examples; add a queued sink; pin CI actions by SHA.

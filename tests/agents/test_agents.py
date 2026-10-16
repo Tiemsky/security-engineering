@@ -3,7 +3,8 @@ from common import ROOT, SKILLS, frontmatter
 
 M = json.loads((ROOT / "agents/manifest.json").read_text())["agents"]
 WRITE_CLAUDE = {"Edit", "Write", "NotebookEdit", "MultiEdit"}
-VERIFIED_AG_READ_TOOLS = {"view_file", "grep_search", "run_command"}   # names present in a working local Antigravity agent set
+VERIFIED_AG_READ_TOOLS = {"view_file", "grep_search", "run_command"}
+AG_CATALOG = set(json.loads((ROOT / "tests/fixtures/antigravity-tool-catalog.json").read_text())["tools"])   # real agy 1.3.4 session catalog
 
 class AgentTests(unittest.TestCase):
     def test_five_agents_and_specs_exist(self):
@@ -26,7 +27,7 @@ class AgentTests(unittest.TestCase):
                 self.assertFalse(WRITE_CLAUDE & {t.strip() for t in cl["tools"].split(",")})
                 self.assertEqual(frontmatter(ROOT / f"adapters/opencode/agents/{n}.md")[0]["permission"]["edit"], "deny")
                 ag = frontmatter(ROOT / f"adapters/antigravity/agents/{n}.md")[0]
-                self.assertTrue(set(ag["tools"]) <= VERIFIED_AG_READ_TOOLS, ag["tools"])
+                self.assertTrue(set(ag["tools"]) <= VERIFIED_AG_READ_TOOLS | ({"invoke_subagent"} if n == "security-orchestrator" else set()), ag["tools"])
 
     def test_no_agent_gets_broad_shell_or_bypass(self):
         for n in M:
@@ -37,6 +38,19 @@ class AgentTests(unittest.TestCase):
             if isinstance(oc.get("bash"), dict): self.assertNotEqual(oc["bash"].get("*"), "allow")
             self.assertEqual(oc.get("edit") in ("deny", "ask"), True)
             self.assertNotIn(frontmatter(ROOT / f"adapters/antigravity/agents/{n}.md")[0]["commandExecutionPolicy"], {"auto", "eager"})
+
+    def test_opencode_agents_are_deny_by_default(self):   # regression: B2 smoke found `websearch` allowed via OpenCode's implicit '*': allow
+        for n in M:
+            perm = frontmatter(ROOT / f"adapters/opencode/agents/{n}.md")[0]["permission"]
+            self.assertEqual(list(perm)[0], "*", "'*' must come first (last matching rule wins)"); self.assertEqual(perm["*"], "deny")
+            self.assertNotIn("websearch", perm); self.assertNotIn("webfetch", {k for k, v in perm.items() if v == "allow"})
+            self.assertEqual(perm.get("task", "deny") == "allow", n == "security-orchestrator")
+
+    def test_antigravity_tool_names_exist_in_real_catalog(self):   # regression: `edit_file` did not exist (found by agy smoke test)
+        for n in M:
+            ag = frontmatter(ROOT / f"adapters/antigravity/agents/{n}.md")[0]
+            self.assertTrue(set(ag["tools"]) <= AG_CATALOG, f"{n}: unknown tools {set(ag['tools']) - AG_CATALOG}")
+        self.assertIn("invoke_subagent", frontmatter(ROOT / "adapters/antigravity/agents/security-orchestrator.md")[0]["tools"])
 
     def test_only_implementer_can_write_and_it_asks_first(self):
         w = [n for n, c in M.items() if c["access"] == "write"]; self.assertEqual(w, ["security-implementer"])
