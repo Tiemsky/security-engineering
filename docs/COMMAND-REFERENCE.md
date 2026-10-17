@@ -126,3 +126,11 @@ Prompts are *requests*, not commands: the same sentence may behave differently a
 |---|---|---|---|---|---|
 | `scripts/audit-copy.sh --repo DIR --out NEW_DIR [--ref REV] [--dry-run]` | audit copy of the committed state without secret files or symlinks | bash, git | writes only `NEW_DIR` (must be empty and outside the repo); source `git status` compared before/after | `audit copy: … source repository unchanged`; exit 5 when secret-bearing files were tracked | TESTED (`tests/pilot`) |
 | `scripts/extract-report-json.py REPORT.md [OUT.json]` | extract the last json block (assessment matrix) from a report | python3 | writes `OUT.json` | JSON; exit 1 if absent or invalid | TESTED |
+
+## 1.8 Active testing (gate-driven; sends requests only when the gate allows)
+Needs python3 + PyYAML. The runner calls `scripts/assessment-gate.py check` for each module and runs it only on `allow`. See [ACTIVE-TESTING.md](ACTIVE-TESTING.md).
+| Command | Purpose | Prerequisites | Side effects | Expected output | Status |
+|---|---|---|---|---|---|
+| `scripts/pentest-runner.py list` | modules, their activity class and required binaries | python3 | none | one line per module | TESTED |
+| `scripts/pentest-runner.py plan SCOPE.yaml --target URL [--now ISO-UTC]` | gate decision per module; **sends nothing** | a scope file | none | per-module `gate=allow/deny/needs_confirmation` | TESTED |
+| `scripts/pentest-runner.py run SCOPE.yaml --target URL [--only m1,m2] [--out DIR] [--now ISO-UTC]` | run the allowed `active_read_only` modules (headers, cookies, CORS, TLS), paced under the rate cap | a scope file; a target you own or are authorized to test | GETs to the target only when the gate allows; writes `DIR/pentest-run.jsonl` | `[ok]/[skip]` per module; exit 0 ran, 3 all denied (nothing sent), 1 a module errored | TESTED on a loopback fixture |
