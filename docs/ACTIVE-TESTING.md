@@ -20,6 +20,9 @@ Labels: **TESTED** (automated test in `tests/pilot/test_pentest_runner.py`) · *
 | `tls` | negotiated TLS version, certificate validity and expiry | stdlib | `tls_certificates` |
 | `tls-scan` | deep TLS scan (protocols, ciphers, cert) via `testssl.sh` | `testssl.sh` | `tls_certificates` |
 | `http-scan` | template-based HTTP scan via `nuclei` (detection templates, no DAST) | `nuclei` | `dast_api_testing` |
+| `injection-fuzz` | SQL-injection **detection** via `sqlmap` (no dump / shell / enumeration) | `sqlmap` | `injection` |
+
+`injection-fuzz` is the first `active_fuzzing` module: the gate requires an explicit, attributed authorization with a window and limits for staging, a valid `production_exception` for production, and allows it on a confirmed-local loopback target (`G05`). Everything above it in the table is `active_read_only`.
 
 A module whose required binary is absent is skipped with a clear message (`shutil.which`), so a checkout with no external tool still runs the stdlib modules. — TESTED (with a fake `testssl.sh`, so no real scan runs in CI). External tools that manage their own connection cadence (testssl among them) are not paced request-by-request by the runner; the run log marks this as `rate_enforced_by_runner: false`, and the gate's authorization, window and scope still govern whether the tool runs at all.
 
@@ -56,3 +59,5 @@ A module declares its required binaries in `needs`; the runner skips it with a c
 - **`-rl <cap>`** — nuclei's own rate limit set to the gate's cap (`min(authorization.limits.max_requests_per_second, env cap)`).
 
 nuclei manages its own templates and needs internet access on first use to fetch them; that fetch is nuclei's, not the runner's. Point `http-scan` at your own instance first.
+
+`injection-fuzz` needs [`sqlmap`](https://sqlmap.org/) on `PATH`. It runs `sqlmap -u <target> --batch --risk=1 --level=2 --technique=BEUST --threads=1 --delay <1/cap> --timeout=15 --retries=1 --flush-session --output-dir <tmp>` and parses stdout to report whether a parameter is injectable. **It is detection, not exploitation.** It never builds — and refuses to run if its argv ever contained — any of `--dump`, `--os-shell`, `--os-cmd`, `--sql-shell`, `--file-read/-write`, `--dbs`, `--tables`, `--columns`, `--passwords` and the other exfiltration/RCE/enumeration flags (`SQLMAP_FORBIDDEN`); this refusal is TESTED. The executor gives you no way to pass extra sqlmap flags. Confirming an injection point tells you what to fix; building a proof-of-concept that extracts data or runs commands is a step you take by hand on a system you own, because `exploitation` is `ALWAYS_DENIED` by the gate (`G01`) and is never automated here. The target needs a testable parameter (e.g. `http://host/item?id=1`); the rate cap becomes sqlmap's `--delay` between requests.
