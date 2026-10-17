@@ -20,6 +20,7 @@ Labels: **TESTED** (automated test in `tests/pilot/test_pentest_runner.py`) · *
 | `tls` | negotiated TLS version, certificate validity and expiry | stdlib | `tls_certificates` |
 | `tls-scan` | deep TLS scan (protocols, ciphers, cert) via `testssl.sh` | `testssl.sh` | `tls_certificates` |
 | `http-scan` | template-based HTTP scan via `nuclei` (detection templates, no DAST) | `nuclei` | `dast_api_testing` |
+| `content-discovery` | path/content discovery via `ffuf` (needs `--wordlist`; flags exposed sensitive/admin paths) | `ffuf` | `dns_exposed_services` |
 | `injection-fuzz` | SQL-injection **detection** via `sqlmap` (no dump / shell / enumeration) | `sqlmap` | `injection` |
 
 `injection-fuzz` is the first `active_fuzzing` module: the gate requires an explicit, attributed authorization with a window and limits for staging, a valid `production_exception` for production, and allows it on a confirmed-local loopback target (`G05`). Everything above it in the table is `active_read_only`.
@@ -52,6 +53,8 @@ More intrusive tools (TLS scanners, template/vuln scanners, content discovery, A
 A module declares its required binaries in `needs`; the runner skips it with a clear message when a binary is absent, and (for tools that take one) passes the gate's rate cap to the tool's own rate flag. `tls-scan` (via `testssl.sh`) is the first external-tool module and the pattern for the rest. Exploitation modules are intentionally out of scope.
 
 `tls-scan` needs [`testssl.sh`](https://testssl.sh/) on `PATH`. It runs `testssl.sh --quiet --color 0 --jsonfile-pretty <tmp> <target>` (no shell, bounded timeout, target passed as a positional argument), then maps each JSON entry's severity (`CRITICAL/HIGH/MEDIUM/LOW` → FAIL; `WARN` → NOT_TESTED; `OK/INFO` → ignored). It reads only — it enumerates protocols, ciphers and the certificate and changes nothing — so it is `active_read_only`.
+
+`content-discovery` needs [`ffuf`](https://github.com/ffuf/ffuf) on `PATH` and a wordlist you pass with `--wordlist PATH` (no wordlist ⇒ `NOT_TESTED`, the tool is not run). It runs `ffuf -u <target>/FUZZ -w <wordlist> -of json -o <tmp> -rate <cap> -t 10 -timeout 10 -noninteractive -s` (the `FUZZ` keyword is appended to the target if absent), reads only, and because the request volume is high its `-rate` is pinned to the gate's cap. It reports an exposed `.git`/`.env`/backup/key path as **high**, an admin/debug/console path as **medium**, and lists every other discovered path as one `info` "attack surface" finding (sample capped at 30). It is `active_read_only`. — TESTED with a fake `ffuf`.
 
 `http-scan` needs [`nuclei`](https://github.com/projectdiscovery/nuclei) on `PATH`. It runs `nuclei -target <target> -jsonl -o <tmp> -silent -duc -ni -rl <cap> -timeout 10 -no-color` and maps each result's `info.severity` (`CRITICAL/HIGH/MEDIUM/LOW` → FAIL; `info` → ignored as a detection, not a weakness). Three safety choices make it `active_read_only` rather than fuzzing, and all three are TESTED by asserting the argv the module passes:
 - **no `-dast`** — detection templates only; nuclei's fuzzing/DAST templates are not enabled here (injection fuzzing will be a separate `active_fuzzing` module);
