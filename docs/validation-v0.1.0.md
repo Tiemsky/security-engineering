@@ -162,3 +162,14 @@ Limits: 4 scenarios, one run per tool, three different models; LLM answers are n
 
 **Not verified / not done** — active tests themselves (no agent can send requests; none was run against any target); behaviour on real projects (no pilot); macOS and native Windows for the new files; the improvement cycle of `core/assessment-quality-gate.md` is a procedure, only its automated parts are tested; the scope template is not copied by the installer.
 
+## 11. Pilot A — read-only audit of a real Laravel project (2026-10-16)
+Target: a private Laravel 12 API (committed state, copy without `.env` files; the original repository was not written to). Details of the findings are **not** reproduced here (private); the full report is kept outside this repository.
+- **Run:** toolkit HEAD `f6c1dce` in project mode; `security-auditor` (Read/Grep/Glob only), Claude Code 2.1.302, sonnet; 117 tool calls, 375 s, USD 1.80, no error.
+- **Environment step:** reported `unknown` / `code-only` (manifests for several environments are not evidence; no authorization recorded). Correct.
+- **Output:** 1 Critical, 3 High, 7 Medium, 9 Low, 3 Info. `assessment-gate.py validate-report` accepted the generated assessment report on the first try (17/17 required topics).
+- **Independent verification (by the maintainer-side agent, not the auditor):** the Critical and 2 of the 3 High findings confirmed by reading the code; the third High (reverse-proxy auth bypass) reproduced at the nginx layer in a throwaway container on loopback with the project's own config (end-to-end effect not verified). 0 false positives among the 4 checked; the 16 other findings were **not** independently checked. One Info finding was false because of the audit copy method (H1 below).
+- **Safety:** original repo unchanged (git status identical, no newer file); no secret-shaped string in the report; a tracked env file with credential-shaped values was excluded from the copy by a pre-scan and flagged to the owner.
+- **Defect H1 (harness, Low):** `git archive` honours `export-ignore`, silently dropping CI files from the audit copy and producing a false "no CI" finding. Use `git ls-files` for audit copies or list excluded paths in the scope.
+- **Release criterion "Laravel pilot in observe mode":** pilot A (static audit) **done**; pilots B/C (runtime in observe mode, staging assessment) **not run**. The criterion stays **partially met**.
+- **Not shown by this pilot:** fix quality (implementer/reviewer cycle was not run), behaviour on NestJS, repeatability (one run).
+

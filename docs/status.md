@@ -1,4 +1,7 @@
-# Status — 2026-10-16 (v0.1.0 content, post-validation: 71 tests, 33 differential scenarios; see validation report)
+# Status — 2026-10-17 (v0.1.0 content; 122 tests collected, 33 differential scenarios; see validation report)
+Test counts change with every addition: the authoritative number is the output of `tests/run_all.sh`. On 2026-10-17 without Docker: 122 run, 3 Docker-only skipped, all OK. The 71 and 82 quoted in older sections were true when written.
+## Generic read-only pilot (added after pilot A)
+`scripts/audit-copy.sh` (committed-state copy via temporary index, secret files/shapes and symlinks excluded and listed, source never written), `scripts/extract-report-json.py`, `adapters/project/audit-prompt.txt.template`, `docs/PILOT-PROTOCOL.md`; 10 tests in `tests/pilot` (one mutation check: disabling the name-based removal fails a test). Not done: a second real project, repeated runs, independent verification of pilot A's remaining 16 findings. Staging/production execution tooling does not exist yet (next step).
 ## Environment-aware assessment (added after the validation)
 Skill `environment-assessment` (13th skill) + `scripts/assessment-gate.py` + contracts `assessment-scope` / `assessment-report` + `core/assessment-coverage.yaml` + `core/assessment-quality-gate.md`. Agents gain the skill (orchestrator stage 0, auditor, architect, reviewer) and **no new permission**. `tests/assessment` (30 tests): classification, every gate rule, report validator, coverage topics, wiring, installed gate. Real sessions: 4 scenarios × Claude Code, Antigravity, OpenCode, all matching the gate after two fixes (see validation report §10). Not provided: a scanner or any tool that sends requests; automatic copy of the scope template; macOS/native Windows runs.
 
