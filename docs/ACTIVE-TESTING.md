@@ -11,13 +11,16 @@ Labels: **TESTED** (automated test in `tests/pilot/test_pentest_runner.py`) · *
 - **Loopback-first.** A confirmed-local, loopback target is allowed without authorization (gate `G05`); any non-local target needs explicit, attributed authorization, an in-window test window and recorded limits. Point the runner at a throw-away instance before anything you care about.
 - **Separate from the agents.** The runner is not an agent and gets no agent permissions; installing it never widens any agent (`tests/agents` unchanged).
 
-## Modules shipped (all `active_read_only`, stdlib only)
-| Module | Checks | Matrix topic |
-|---|---|---|
-| `http-headers` | HSTS, CSP, X-Content-Type-Options, X-Frame-Options, Referrer-Policy | `http_headers_cors_cookies` |
-| `cookie-flags` | Set-Cookie Secure / HttpOnly / SameSite | `http_headers_cors_cookies` |
-| `cors` | reflected-origin and credentialed CORS | `http_headers_cors_cookies` |
-| `tls` | negotiated TLS version, certificate validity and expiry | `tls_certificates` |
+## Modules shipped (all `active_read_only`)
+| Module | Checks | Needs | Matrix topic |
+|---|---|---|---|
+| `http-headers` | HSTS, CSP, X-Content-Type-Options, X-Frame-Options, Referrer-Policy | stdlib | `http_headers_cors_cookies` |
+| `cookie-flags` | Set-Cookie Secure / HttpOnly / SameSite | stdlib | `http_headers_cors_cookies` |
+| `cors` | reflected-origin and credentialed CORS | stdlib | `http_headers_cors_cookies` |
+| `tls` | negotiated TLS version, certificate validity and expiry | stdlib | `tls_certificates` |
+| `tls-scan` | deep TLS scan (protocols, ciphers, cert) via `testssl.sh` | `testssl.sh` | `tls_certificates` |
+
+A module whose required binary is absent is skipped with a clear message (`shutil.which`), so a checkout with no external tool still runs the stdlib modules. — TESTED (with a fake `testssl.sh`, so no real scan runs in CI). External tools that manage their own connection cadence (testssl among them) are not paced request-by-request by the runner; the run log marks this as `rate_enforced_by_runner: false`, and the gate's authorization, window and scope still govern whether the tool runs at all.
 
 ## Use
 ```bash
@@ -42,4 +45,6 @@ More intrusive tools (TLS scanners, template/vuln scanners, content discovery, A
 - a fuzzer / injection probe ⇒ `active_fuzzing` (the gate requires authorization + window + limits, and in production a specific, unexpired `production_exception`);
 - an authenticated crawl using a **dedicated test account** ⇒ `active_authenticated` (gate `G12` requires the account to be recorded).
 
-A module declares its required binaries in `needs`; the runner skips it with a clear message when a binary is absent, and always passes the gate's rate cap to the tool's own rate flag. No external-tool module ships yet — adding one is the next increment, after you confirm which tools to wire in. Exploitation modules are intentionally out of scope.
+A module declares its required binaries in `needs`; the runner skips it with a clear message when a binary is absent, and (for tools that take one) passes the gate's rate cap to the tool's own rate flag. `tls-scan` (via `testssl.sh`) is the first external-tool module and the pattern for the rest. Exploitation modules are intentionally out of scope.
+
+`tls-scan` needs [`testssl.sh`](https://testssl.sh/) on `PATH`. It runs `testssl.sh --quiet --color 0 --jsonfile-pretty <tmp> <target>` (no shell, bounded timeout, target passed as a positional argument), then maps each JSON entry's severity (`CRITICAL/HIGH/MEDIUM/LOW` → FAIL; `WARN` → NOT_TESTED; `OK/INFO` → ignored). It reads only — it enumerates protocols, ciphers and the certificate and changes nothing — so it is `active_read_only`.
