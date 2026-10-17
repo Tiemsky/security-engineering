@@ -19,6 +19,7 @@ Labels: **TESTED** (automated test in `tests/pilot/test_pentest_runner.py`) · *
 | `cors` | reflected-origin and credentialed CORS | stdlib | `http_headers_cors_cookies` |
 | `tls` | negotiated TLS version, certificate validity and expiry | stdlib | `tls_certificates` |
 | `tls-scan` | deep TLS scan (protocols, ciphers, cert) via `testssl.sh` | `testssl.sh` | `tls_certificates` |
+| `http-scan` | template-based HTTP scan via `nuclei` (detection templates, no DAST) | `nuclei` | `dast_api_testing` |
 
 A module whose required binary is absent is skipped with a clear message (`shutil.which`), so a checkout with no external tool still runs the stdlib modules. — TESTED (with a fake `testssl.sh`, so no real scan runs in CI). External tools that manage their own connection cadence (testssl among them) are not paced request-by-request by the runner; the run log marks this as `rate_enforced_by_runner: false`, and the gate's authorization, window and scope still govern whether the tool runs at all.
 
@@ -48,3 +49,10 @@ More intrusive tools (TLS scanners, template/vuln scanners, content discovery, A
 A module declares its required binaries in `needs`; the runner skips it with a clear message when a binary is absent, and (for tools that take one) passes the gate's rate cap to the tool's own rate flag. `tls-scan` (via `testssl.sh`) is the first external-tool module and the pattern for the rest. Exploitation modules are intentionally out of scope.
 
 `tls-scan` needs [`testssl.sh`](https://testssl.sh/) on `PATH`. It runs `testssl.sh --quiet --color 0 --jsonfile-pretty <tmp> <target>` (no shell, bounded timeout, target passed as a positional argument), then maps each JSON entry's severity (`CRITICAL/HIGH/MEDIUM/LOW` → FAIL; `WARN` → NOT_TESTED; `OK/INFO` → ignored). It reads only — it enumerates protocols, ciphers and the certificate and changes nothing — so it is `active_read_only`.
+
+`http-scan` needs [`nuclei`](https://github.com/projectdiscovery/nuclei) on `PATH`. It runs `nuclei -target <target> -jsonl -o <tmp> -silent -duc -ni -rl <cap> -timeout 10 -no-color` and maps each result's `info.severity` (`CRITICAL/HIGH/MEDIUM/LOW` → FAIL; `info` → ignored as a detection, not a weakness). Three safety choices make it `active_read_only` rather than fuzzing, and all three are TESTED by asserting the argv the module passes:
+- **no `-dast`** — detection templates only; nuclei's fuzzing/DAST templates are not enabled here (injection fuzzing will be a separate `active_fuzzing` module);
+- **`-ni`** — interactsh out-of-band callbacks disabled, so the scan contacts no third-party server;
+- **`-rl <cap>`** — nuclei's own rate limit set to the gate's cap (`min(authorization.limits.max_requests_per_second, env cap)`).
+
+nuclei manages its own templates and needs internet access on first use to fetch them; that fetch is nuclei's, not the runner's. Point `http-scan` at your own instance first.
