@@ -40,6 +40,24 @@
             "generic",
             "other"
           ]
+        },
+        "target_identity": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "docker_verification": {
+              "type": "boolean"
+            },
+            "container_name_patterns": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "minItems": 1
+            }
+          }
         }
       }
     },

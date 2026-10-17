@@ -65,3 +65,33 @@ class ContractTests(unittest.TestCase):
     def test_version_and_compat_doc(self):
         self.assertRegex(load("http-access-event.schema.json")["properties"]["schema_version"]["pattern"], r"1")
         self.assertIn("MAJOR", (ROOT / "contracts/COMPATIBILITY.md").read_text())
+
+    def test_assessment_scope_1_0_0_and_1_1_0_both_validate(self):
+        """Compatibility check for the point the review flagged: schema evolved to 1.1.0 (added optional
+        target.target_identity) while the template document keeps schema_version "1.0.0". Both a 1.0.0
+        scope WITHOUT the new block and a 1.1.0 scope WITH it must validate against the same schema —
+        the change is additive and backward-compatible, not an inconsistency."""
+        schema = load("assessment-scope.schema.json")
+        base = {"target": {"name": "x", "framework": "generic"},
+                "declared_environment": "local",
+                "evidence": [{"kind": "env_config", "detail": "APP_ENV=local", "supports": "local"}],
+                "authorization": {"status": "none"}}
+        v100 = {"schema_version": "1.0.0", **copy.deepcopy(base)}                       # old doc, no target_identity
+        v110 = {"schema_version": "1.1.0", **copy.deepcopy(base)}
+        v110["target"]["target_identity"] = {"docker_verification": True, "container_name_patterns": ["x"]}
+        self.assertEqual(validate(v100, schema), [], "a 1.0.0 scope without target_identity must stay valid")
+        self.assertEqual(validate(v110, schema), [], "a 1.1.0 scope with target_identity must validate")
+        self.assertRegex(schema["properties"]["schema_version"]["pattern"], r"1")       # accepts any 1.x.y
+
+    def test_assessment_scope_target_identity_shape_is_enforced(self):
+        """The new block is not a free-form escape hatch: an empty container_name_patterns (minItems 1)
+        and an unknown property must both be rejected, so a malformed identity declaration cannot slip
+        through and silently weaken the preflight."""
+        schema = load("assessment-scope.schema.json")
+        base = {"schema_version": "1.1.0", "declared_environment": "local",
+                "evidence": [{"kind": "env_config", "detail": "d", "supports": "local"}],
+                "authorization": {"status": "none"}}
+        empty = copy.deepcopy(base); empty["target"] = {"name": "x", "target_identity": {"container_name_patterns": []}}
+        self.assertTrue(validate(empty, schema), "empty container_name_patterns must be rejected (minItems 1)")
+        extra = copy.deepcopy(base); extra["target"] = {"name": "x", "target_identity": {"docker_verification": True, "bogus": 1}}
+        self.assertTrue(validate(extra, schema), "unknown property in target_identity must be rejected")

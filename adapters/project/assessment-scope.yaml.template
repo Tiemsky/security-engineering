@@ -2,6 +2,9 @@
 # Rules: a hostname/URL is never evidence; a declaration alone is not enough; accessibility is not authorization.
 schema_version: "1.0.0"
 target: {name: "my-app", framework: "laravel"}      # laravel | nestjs | generic | other
+  # target_identity: {docker_verification: true, container_name_patterns: ["my-app"]}  # pentest-runner.py: refuse to run
+  #   if the live --target port is published by a running container whose name/image does NOT match one of these
+  #   patterns (never trust the port number alone). Needs `docker` on PATH; omit if the target is not a local container.
 declared_environment: unknown                       # local | staging | production | unknown  (what the owner says)
 evidence:                                           # VERIFIABLE artefacts; kinds: deployment_manifest, ci_config, infra_definition, env_config, runtime_metadata, declared_by_owner, hostname, url
   # - {kind: deployment_manifest, detail: "overlays/staging sets APP_ENV=staging", supports: staging}
