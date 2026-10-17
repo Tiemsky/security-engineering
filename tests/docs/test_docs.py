@@ -4,7 +4,7 @@ import re, unittest, pathlib
 from common import ROOT, SKILLS
 import yaml
 
-DOCS = ["USER-GUIDE.md", "COMMAND-REFERENCE.md", "OWASP-COVERAGE.md", "EXAMPLES.md"]
+DOCS = ["USER-GUIDE.md", "COMMAND-REFERENCE.md", "OWASP-COVERAGE.md", "EXAMPLES.md", "PILOT-PROTOCOL.md"]
 COVERAGE = {"IMPLEMENTED_AND_TESTED", "IMPLEMENTED_NOT_VERIFIED", "GUIDANCE_ONLY", "PARTIAL", "MISSING", "NOT_APPLICABLE"}
 CMD_LABELS = {"EXECUTED", "TESTED", "DOCUMENTED", "NOT-VERIFIED"}
 AGENTS = {"security-orchestrator", "security-architect", "security-auditor", "security-implementer", "security-reviewer"}

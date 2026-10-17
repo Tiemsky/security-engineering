@@ -50,7 +50,7 @@ Working directory: the repository root (`~/Apps/security-engineering`) unless no
 ### 1.4 Tests
 | Command | Purpose | Prerequisites | Side effects | Expected output | Status |
 |---|---|---|---|---|---|
-| `tests/run_all.sh` | adapter drift check + all unit/installer/contract/policy/agent/integration tests | python3, PyYAML, Docker (for the integration + PowerShell tests) | builds/uses Docker images `se-laravel-it`, `se-nest-it`; temp dirs | 71 tests all `ok` on 2026-10-16 (fresh clone, rebuilt images); 82 with the 11 documentation tests added afterwards (run this session, all `OK`) | EXECUTED |
+| `tests/run_all.sh` | adapter drift check + all unit/installer/contract/policy/agent/integration tests | python3, PyYAML, Docker (for the integration + PowerShell tests) | builds/uses Docker images `se-laravel-it`, `se-nest-it`; temp dirs | all `ok`: 71 tests on 2026-10-16 (fresh clone, rebuilt images); 122 collected on 2026-10-17 (119 run without Docker, 3 Docker-only skipped) — the output of the command is authoritative | EXECUTED |
 | `tests/run_all.sh --no-docker` (or `SE_SKIP_DOCKER=1 tests/run_all.sh`) | same without Docker; the Docker tests are skipped **explicitly** | python3, PyYAML | none outside temp dirs | Docker-dependent tests reported as skipped | EXECUTED |
 | `tests/integration/run_laravel.sh OUTDIR` | replay the shared scenarios in a real Laravel 12.70 app (PHP 8.4) | Docker | builds `se-laravel-it`; writes results into `OUTDIR` | per-scenario JSON | EXECUTED |
 | `tests/integration/run_nestjs.sh OUTDIR` | same in a real NestJS 11.2 app (Node 24) | Docker | builds `se-nest-it` | per-scenario JSON | EXECUTED |
@@ -120,3 +120,9 @@ Skills are invoked by naming them in the prompt, or are loaded automatically by 
 
 ## 4. Natural-language prompts
 Prompts are *requests*, not commands: the same sentence may behave differently across tools and models. Ready-to-use prompts with scope, allowed/prohibited actions, evidence and acceptance criteria: [EXAMPLES.md](EXAMPLES.md).
+
+## 1.7 Pilot helpers (read-only audit of any application)
+| Command | Purpose | Prerequisites | Side effects | Expected output | Status |
+|---|---|---|---|---|---|
+| `scripts/audit-copy.sh --repo DIR --out NEW_DIR [--ref REV] [--dry-run]` | audit copy of the committed state without secret files or symlinks | bash, git | writes only `NEW_DIR` (must be empty and outside the repo); source `git status` compared before/after | `audit copy: … source repository unchanged`; exit 5 when secret-bearing files were tracked | TESTED (`tests/pilot`) |
+| `scripts/extract-report-json.py REPORT.md [OUT.json]` | extract the last json block (assessment matrix) from a report | python3 | writes `OUT.json` | JSON; exit 1 if absent or invalid | TESTED |
