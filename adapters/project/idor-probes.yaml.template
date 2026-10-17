@@ -7,3 +7,8 @@ auth:
 probes:
   - {path: "/api/orders/{id}", own: [101], foreign: [102, 103]}
   # - {path: "/api/users/{id}/profile", own: [42], foreign: [43, 9999]}
+# For `--only priv-esc` (BFLA / privilege escalation): endpoints the LOW-privilege test account must be denied.
+# Point $SE_AUTH_HEADER at a low-privilege account, or every path will look vulnerable.
+privileged_paths:
+  - "/api/admin/users"
+  # - "/api/admin/settings"
