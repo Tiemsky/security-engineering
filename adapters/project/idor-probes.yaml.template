@@ -1,0 +1,9 @@
+# IDOR/BOLA probes for `pentest-runner.py run --only idor-bola --probes THIS_FILE`.
+# Commit WITHOUT the credential: the test-account token goes in $SE_AUTH_HEADER at run time, never here.
+# Each path is joined to --target; {id} is substituted. `own` = objects the test account owns (expected 2xx);
+# `foreign` = objects it must NOT reach (expected 401/403/404). A foreign 2xx is reported as BOLA/IDOR.
+auth:
+  header: Authorization          # the header carrying $SE_AUTH_HEADER (e.g. "Bearer <token>")
+probes:
+  - {path: "/api/orders/{id}", own: [101], foreign: [102, 103]}
+  # - {path: "/api/users/{id}/profile", own: [42], foreign: [43, 9999]}
