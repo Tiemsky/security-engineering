@@ -124,6 +124,38 @@ class Evidence(unittest.TestCase):           # capacity 3: evidence quality
         self.mut("local", lambda r: (ok(r), r["matrix"][0].update(evidence=[])), "PASS without evidence")
         self.mut("local", lambda r: (ok(r), r["matrix"][0].update(confidence="low")), "low confidence")
 
+    # ---- report contract 1.1.0 (work package F): enriched per-finding fields, all optional ----
+    def test_enriched_optional_fields_validate_and_are_backward_compatible(self):
+        self.assertEqual(gate.validate_report(report("local")), [])   # a bare 1.0.0 report (no new fields) stays valid
+        r = report("local"); r["schema_version"] = "1.1.0"
+        r["matrix"][0].update(
+            id="SEC-001", asset="https://app.example/api/orders/{id}", finding_class="deployed_application",
+            tool={"name": "pentest-runner", "version": "0.1.0"}, timestamp="2026-10-18T10:00:00Z",
+            execution="not_run", reproduction=["authenticated GET /api/orders/102 with the test account"],
+            severity_rationale="object-level authz is a direct data-exposure risk",
+            confidence_rationale="not attempted in this scope", applicable_environments=["staging", "production"],
+            review={"status": "pending", "reviewer": "franck", "at": "2026-10-18T11:00:00Z"},
+            remediation_status="open", retest_status="not_retested")
+        self.assertEqual(gate.validate_report(r), [], "an enriched 1.1.0 report must validate")
+
+    def test_execution_error_or_timeout_cannot_be_a_pass(self):
+        def passrow(r):
+            r["matrix"][0].update(result="PASS", reason="", evidence=["GET / -> 200, headers present"],
+                                  confidence="high", verification_scope="static", environment="local")
+            r["summary"]["verified_secure"] = [r["matrix"][0]["control"]]
+        for ex in ("error", "timeout"):
+            self.mut("local", lambda r, e=ex: (passrow(r), r["matrix"][0].update(execution=e)), "cannot be a PASS")
+        r = report("local"); passrow(r); r["matrix"][0]["execution"] = "completed"   # a completed PASS is fine
+        self.assertEqual(gate.validate_report(r), [])
+
+    def test_remediation_fixed_contradicts_retest_failed(self):
+        def failrow(r):
+            r["matrix"][0].update(result="FAIL", severity="high", reason="x", remediation="fix it", retest="rerun")
+            r["summary"]["confirmed_vulnerabilities"] = ["x"]
+        self.mut("local", lambda r: (failrow(r), r["matrix"][0].update(remediation_status="fixed", retest_status="failed")), "contradicts")
+        r = report("local"); failrow(r); r["matrix"][0].update(remediation_status="fixed", retest_status="passed")  # fixed + passed is fine
+        self.assertEqual(gate.validate_report(r), [])
+
     def test_runtime_and_operational_controls_cannot_pass_from_a_code_audit(self):
         for m in ("code-only", "local"):
             self.mut(m, lambda r: r["matrix"][0].update(result="PASS", reason="", evidence=["config file"], verification_scope="operational", environment="production"), "operational")

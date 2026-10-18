@@ -178,6 +178,8 @@ def validate_report(report):
             if r["severity"] == "none": problems.append(f"{who}: FAIL needs a severity")
             if not r.get("remediation") or not r.get("retest"): problems.append(f"{who}: FAIL needs remediation and a retest procedure")
         if r["result"] in ("NOT_TESTED", "PARTIAL", "NOT_APPLICABLE") and not r.get("reason"): problems.append(f"{who}: {r['result']} needs a reason")
+        if r.get("execution") in ("error", "timeout") and r["result"] == "PASS": problems.append(f"{who}: execution {r['execution']!r} cannot be a PASS (a failed or timed-out test is not a pass)")
+        if r.get("remediation_status") == "fixed" and r.get("retest_status") == "failed": problems.append(f"{who}: remediation_status 'fixed' contradicts retest_status 'failed'")
     env = report["environment"]
     if mode == "code-only" and env["determined"] != "unknown": problems.append("code-only mode requires environment.determined == unknown")
     if mode != "code-only" and env["determined"] != mode: problems.append(f"mode {mode} but environment.determined is {env['determined']}")
